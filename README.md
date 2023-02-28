@@ -16,7 +16,6 @@ coding
 ![img.png](img.png)![img_1.png](img_1.png)
 ###1.3.1.1 Boot Sector功能点
     1、jump code干啥用的？
-
 ###1.3.1.2 FAT功能点
     1、通过数组+链表维护所有的cluster信息
     2、文件可以存在于多个cluster中，每个cluster所在的坐标的数值，代表该cluster后续的状态：空，nextCluster，endFile
