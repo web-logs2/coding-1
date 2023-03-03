@@ -13,7 +13,7 @@ coding
 ##1.3 FAT16X底层存储模块
 
 ###1.3.1 数据结构
-![img.png](img.png)![img_1.png](img_1.png)
+![img_2.png](img_2.png)![img_1.png](img_1.png)
 ###1.3.1.1 Boot Sector功能点
     1、jump code干啥用的？
 ###1.3.1.2 FAT功能点
@@ -26,6 +26,7 @@ coding
     4、更新操作时间
     5、更新写操作时间
     6、需要维护目录和文件的路径关系，支持ls,cd,pwd命令
+    7、根据boot sector的配置，初始化directory entry array的size
 ###1.3.1.4 Data Region功能点
     1、建模：cluster
     2、cluster存储方式对比：
@@ -40,7 +41,7 @@ coding
 ```
 1、输入文件，判断root directory剩余空间是否支持写入，判断当前剩余cluster空间是否满足文件大小；输入目录，判断root directory剩余空间是否支持写入
 2、step1通过后
-    2.1 输入是目录，则返回成功；
+    2.1 输入是目录，信息写入root directory，返回成功；
     2.2 输入是文件，文件基础信息写入root directory；把文件数据写入到data region（此步骤需要选择cluster，step1判断cluster空间时，就已经知道写入那个，不需要重新选择；
         需要注意文件过大，需要多个cluster，step1判断空间时，应该把所有用到的cluster信息全部透传给step2）
 ```
@@ -60,6 +61,7 @@ coding
 ```
 1、输入当前所在目录路径：
 2、根据当前路径，去root directory查询其下边所有的目录和文件
+问题：一级目录查询root directory就行，但是如果查询二级目录或者三级目录，就需要把该一级目录下所有cluster数据全部load出来，才能查询，性能有点差
 ```
 5、切换目录 cd
 ```

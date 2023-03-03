@@ -28,7 +28,8 @@
 		<module>coding-dao</module>
 		<module>coding-service</module>
 		<module>coding-start</module>
-	</modules>
+    <module>coding-common</module>
+  </modules>
 
 	<dependencies>
 		<dependency>
