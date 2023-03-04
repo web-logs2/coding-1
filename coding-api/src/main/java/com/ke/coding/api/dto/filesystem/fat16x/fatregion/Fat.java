@@ -41,6 +41,9 @@ public class Fat {
 	public static void main(String[] args) {
 		Fat fat = new Fat();
 		System.out.println(fat.free());
+
+		fat.save(HexByteUtil.hexToByteArray(FAT_NC_END_OF_FILE));
+		System.out.println(fat.isEnd());
 	}
 
 

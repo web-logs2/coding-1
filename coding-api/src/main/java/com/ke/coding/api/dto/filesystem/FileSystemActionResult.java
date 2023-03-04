@@ -13,10 +13,10 @@ import lombok.Data;
 @Data
 public class FileSystemActionResult {
 
-	public FileSystemActionResult(boolean success, String status, String result) {
+	public FileSystemActionResult(boolean success, String status, String message) {
 		this.success = success;
 		this.status = status;
-		this.result = result;
+		this.message = message;
 	}
 
 	/**
@@ -31,10 +31,12 @@ public class FileSystemActionResult {
 	/**
 	 * 结果
 	 */
-	private String result;
+	private String message;
 
-	public static FileSystemActionResult fail(String status, String result){
-		return new FileSystemActionResult(false, status, result);
+	private String data;
+
+	public static FileSystemActionResult fail(String status, String message){
+		return new FileSystemActionResult(false, status, message);
 	}
 
 	public static FileSystemActionResult fail(ErrorCodeEnum errorCodeEnum){
@@ -42,5 +44,11 @@ public class FileSystemActionResult {
 	}
 	public static FileSystemActionResult success(){
 		return new FileSystemActionResult(true, SYSTEM_SUCCESS.status(), SYSTEM_SUCCESS.message());
+	}
+
+	public static FileSystemActionResult success(String data){
+		FileSystemActionResult fileSystemActionResult = new FileSystemActionResult(true, SYSTEM_SUCCESS.status(), SYSTEM_SUCCESS.message());
+		fileSystemActionResult.setData(data);
+		return fileSystemActionResult;
 	}
 }

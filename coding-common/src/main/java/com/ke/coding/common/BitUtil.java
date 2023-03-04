@@ -18,7 +18,7 @@ public class BitUtil {
 	}
 
 	public static void main(String[] args) {
-		int leftNum = getBit((byte) 0x00, 8);
+		int leftNum = getBit((byte) 0x10, 4);
 		System.out.println(leftNum);
 	}
 

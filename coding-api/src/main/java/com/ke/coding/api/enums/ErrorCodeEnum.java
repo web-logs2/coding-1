@@ -7,7 +7,8 @@ public enum ErrorCodeEnum {
 	//
 	INSUFFICIENT_SPACE("1001", "空间不足"),
 	DIR_LENGTH_TOO_LONG("1002", "目录名称过长"),
-	DIR_DATA_ERROR("1003", "目录数据异常"),
+	FILENAME_LENGTH_TOO_LONG("1003", "文件名称过长"),
+	DIR_DATA_ERROR("1004", "目录数据异常"),
 
 	;
 

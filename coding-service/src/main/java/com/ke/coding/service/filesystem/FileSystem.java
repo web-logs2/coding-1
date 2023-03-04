@@ -14,6 +14,32 @@ public interface FileSystem {
 	 * mkdir
 	 *
 	 * @param command 命令
+	 * @return {@link FileSystemActionResult}
 	 */
 	FileSystemActionResult mkdir(Command command);
+
+
+	/**
+	 * touch
+	 *
+	 * @param command 命令
+	 * @return {@link FileSystemActionResult}
+	 */
+	FileSystemActionResult touch(Command command);
+
+	/**
+	 * ls
+	 *
+	 * @param command 命令
+	 * @return {@link FileSystemActionResult}
+	 */
+	FileSystemActionResult ls(Command command);
+
+	/**
+	 * echo
+	 *
+	 * @param command 命令
+	 * @return {@link FileSystemActionResult}
+	 */
+	FileSystemActionResult echo(Command command);
 }

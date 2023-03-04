@@ -1,11 +1,14 @@
 package com.ke.coding.api.dto.filesystem.fat16x.directoryregion;
 
 
+import static com.ke.coding.api.enums.Constants.DIRECTORY_ENTRY_SIZE;
+
 import com.ke.coding.api.enums.Constants;
 import com.ke.coding.common.BitUtil;
 import com.ke.coding.common.HexByteUtil;
 import java.util.concurrent.TimeUnit;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -28,7 +31,7 @@ public class DirectoryEntry {
 	 * 1Ah	2 bytes	Starting cluster - 指向该文件/文件夹起始 cluster。如果是文件，cluster 里保存的是这个文件的第一部分数据；如果是文件夹，cluster 里保存改文件的子条目项
 	 * 1Ch	4 bytes	File size - 如果是文件，表示文件字节数，最大 2 的 32 次方。如果不是文件，此值为 0
 	 */
-	byte[] data = new byte[32];
+	byte[] data = new byte[DIRECTORY_ENTRY_SIZE];
 
 	public void setFileName(String fileName){
 		char[] array = fileName.toCharArray();
@@ -37,6 +40,10 @@ public class DirectoryEntry {
 			byte hexToByte = HexByteUtil.hexToByte(s);
 			data[i] = hexToByte;
 		}
+	}
+
+	public String getWholeFileName(){
+		return getFileName() + (StringUtils.isBlank(getFileNameExtension()) ? "" : "." + getFileNameExtension());
 	}
 
 	public String getFileName(){
@@ -52,6 +59,27 @@ public class DirectoryEntry {
 				int i1 = Integer.parseInt(s, 16);
 				char ch = (char) i1;
 				array[i] = ch;
+		}
+		return new String(array);
+	}
+
+	public void setFileNameExtension(String fileNameExtension){
+		char[] array = fileNameExtension.toCharArray();
+		byte[] bytes = new byte[array.length];
+		for (int i = 0; i < array.length; i++) {
+			String s = Integer.toHexString(array[i]);
+			byte hexToByte = HexByteUtil.hexToByte(s);
+			bytes[i] = hexToByte;
+		}
+		System.arraycopy(bytes, 0, data, 8, 3);
+	}
+
+	public String getFileNameExtension(){
+		byte[] bytes = new byte[3];
+		char[] array = new char[3];
+		System.arraycopy(data, 8, bytes, 0, 3);
+		for (int i = 0; i < bytes.length; i++) {
+			array[i] = (char) Integer.parseInt(HexByteUtil.byteToHex(bytes[i]),16);
 		}
 		return new String(array);
 	}
@@ -129,7 +157,7 @@ public class DirectoryEntry {
 		return Long.parseLong(s, 16);
 	}
 
-	public static DirectoryEntry build(String fileName, int attr){
+	public static DirectoryEntry buildDir(String fileName, int attr){
 		DirectoryEntry directoryEntry = new DirectoryEntry();
 		//step:准备基础信息
 		directoryEntry.setFileName(fileName);
@@ -139,11 +167,29 @@ public class DirectoryEntry {
 		return directoryEntry;
 	}
 
+	public static DirectoryEntry buildFile(String fileName, String fileNameExtension){
+		DirectoryEntry directoryEntry = new DirectoryEntry();
+		//step:准备基础信息
+		directoryEntry.setFileName(fileName);
+		directoryEntry.setFileNameExtension(fileNameExtension);
+		directoryEntry.setLastWriteTimeStamp();
+		directoryEntry.setCreateTimeStamp();
+		directoryEntry.setFileSize(0);
+		//touch文件，不需要绑定cluster
+		directoryEntry.setStartingCluster(0);
+		return directoryEntry;
+	}
+
+	public void updateWriteInfo(long fileSize){
+		setFileSize(fileSize);
+		setLastWriteTimeStamp();
+	}
+
 	public static void main(String[] args) {
 		DirectoryEntry directoryEntry = new DirectoryEntry();
 		directoryEntry.setFileName("hello");
 		System.out.println(directoryEntry.getFileName());
-		directoryEntry.setAttribute(Constants.ATTRIBUTE_READ_ONLY);
+		directoryEntry.setAttribute(Constants.ATTRIBUTE_DIRECTORY);
 		System.out.println(directoryEntry.getAttribute(4));
 		System.out.println(directoryEntry.getAttribute(0));
 
@@ -161,6 +207,9 @@ public class DirectoryEntry {
 
 		directoryEntry.setFileSize(65535123);
 		System.out.println(directoryEntry.getFileSize());
+
+		directoryEntry.setFileNameExtension("jpg");
+		System.out.println(directoryEntry.getFileNameExtension());
 	}
 
 }

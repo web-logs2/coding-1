@@ -16,4 +16,12 @@
     <maven.compiler.target>8</maven.compiler.target>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <artifactId>risk-safety-common-util</artifactId>
+      <groupId>com.ke.risk.safety.common</groupId>
+      <version>${risk-safety-common-util.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>

@@ -17,4 +17,11 @@ public class Command {
 
 	private String currentPath;
 
+	public static Command build(String currentPath, List<String> params){
+		Command command = new Command();
+		command.setCurrentPath(currentPath);
+		command.setParams(params);
+		return command;
+	}
+
 }

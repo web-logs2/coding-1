@@ -45,7 +45,7 @@ coding
     2.2 输入是文件，文件基础信息写入root directory；把文件数据写入到data region（此步骤需要选择cluster，step1判断cluster空间时，就已经知道写入那个，不需要重新选择；
         需要注意文件过大，需要多个cluster，step1判断空间时，应该把所有用到的cluster信息全部透传给step2）
 ```
-2、删除文件 del：
+2、删除文件 rm：
 ```
 1、输入文件or目录，判断root directory是否存在该文件
 2、step1通过后

@@ -31,10 +31,11 @@ public class Constants {
 
 	public static final int PER_SECTOR_BYTES = 512;
 	public static final int PER_CLUSTER_SECTOR = 64;
+	public static final int DIRECTORY_ENTRY_SIZE = 32;
 
 	public static final String FAT_NC_FREE_CLUSTER = "0000";
 	public static final String FAT_NC_NOT_ALLOWED = "0001";
-	public static final String FAT_NC_BAD_SECTOR = "FFF7";
-	public static final String FAT_NC_END_OF_FILE = "FFF8";
+	public static final String FAT_NC_BAD_SECTOR = "fff7";
+	public static final String FAT_NC_END_OF_FILE = "fff8";
 
 }

@@ -1,7 +1,9 @@
 package com.ke.coding.api.dto.filesystem.fat16x.dataregion;
 
+import static com.ke.coding.common.ArrayUtils.list2Ary;
 import static com.ke.coding.common.ArrayUtils.splitAry;
 
+import com.ke.coding.api.enums.Constants;
 import java.util.List;
 import lombok.Data;
 
@@ -26,11 +28,8 @@ public class DataCluster {
 	public void save(byte[] data) {
 		List<List<Byte>> lists = splitAry(data, 512);
 		for (int i = 0; i < lists.size(); i++) {
-			byte[] temp = new byte[lists.get(i).size()];
-			for (int i1 = 0; i1 < lists.get(i).size(); i1++) {
-				temp[i1] = lists.get(i).get(i1);
-			}
-			sectors[i].save(temp);
+			sectors[i] = new DataSector();
+			sectors[i].save(list2Ary(lists.get(i)));
 		}
 	}
 
@@ -41,11 +40,18 @@ public class DataCluster {
 	 * @return boolean
 	 */
 	public boolean appendSave(byte[] data) {
-		for (DataSector sector : sectors) {
-			int i1 = sector.freeSpaceIndex(data.length);
-			if (i1 != -1) {
-				sector.appendSave(data, i1);
-				return true;
+		for (int i = 0; i < sectors.length; i++) {
+			//sector为null时，初始化，并追加内容
+			if (sectors[i] == null) {
+				sectors[i] = new DataSector();
+				sectors[i].appendSave(data, 0);
+			} else {
+				//sector不为null时，寻找到起始的空闲下标
+				int i1 = sectors[i].freeSpaceIndexForDir(data.length);
+				if (i1 != -1) {
+					sectors[i].appendSave(data, i1);
+					return true;
+				}
 			}
 		}
 		return false;
