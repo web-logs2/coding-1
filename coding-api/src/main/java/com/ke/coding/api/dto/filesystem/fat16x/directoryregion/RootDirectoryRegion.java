@@ -12,11 +12,20 @@ public class RootDirectoryRegion {
 
 	private static final int MAX_SIZE = 512;
 
-	private int usedSize = -1;
-
 	DirectoryEntry[] directoryEntries = new DirectoryEntry[MAX_SIZE];
 
 	public boolean haveIdleSpace() {
-		return usedSize + 1 < MAX_SIZE;
+		return freeIndex() < MAX_SIZE;
+	}
+
+	public int freeIndex(){
+		int index;
+		for (int i = 0; i < directoryEntries.length; i++) {
+			if (directoryEntries[i] == null){
+				index = i;
+				return index;
+			}
+		}
+		return -1;
 	}
 }

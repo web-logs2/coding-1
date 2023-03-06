@@ -22,11 +22,11 @@ public class DataSector extends Sector {
 		System.arraycopy(newData, 0, data, 0, newData.length);
 	}
 
-	public void appendSave(byte[] newData, int startIndex) {
+	public void appendSaveDir(byte[] newData, int startIndex) {
 		System.arraycopy(newData, 0, data, startIndex, newData.length);
 	}
 
-	public void appendSave(byte[] newData, int srcStartIndex, int desStartIndex, int size) {
+	public void appendSaveFile(byte[] newData, int srcStartIndex, int desStartIndex, int size) {
 		System.arraycopy(newData, srcStartIndex, data, desStartIndex, size);
 	}
 

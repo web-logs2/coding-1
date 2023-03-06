@@ -42,4 +42,12 @@ public interface FileSystem {
 	 * @return {@link FileSystemActionResult}
 	 */
 	FileSystemActionResult echo(Command command);
+
+	/**
+	 * cat
+	 *
+	 * @param command 命令
+	 * @return {@link FileSystemActionResult}
+	 */
+	FileSystemActionResult cat(Command command);
 }
