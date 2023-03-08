@@ -10,13 +10,15 @@ import lombok.Setter;
  * @description:
  */
 public enum ActionTypeEnums {
-	LS("ls", "lsAction"),
+	LL("ll", "llAction"),
 	MKDIR("mkdir", "mkdirAction"),
 	TOUCH("touch", "touchAction"),
 	FORMAT("format", "formatAction"),
 	ECHO("echo", "echoAction"),
 	CAT("cat", "catAction"),
 	CD("cd", "cdAction"),
+	PWD("pwd", "pwdAction"),
+	DEFAULT("default", "defaultAction"),
 
 	;
 
@@ -31,6 +33,6 @@ public enum ActionTypeEnums {
 	}
 
 	public static ActionTypeEnums getByType(String type) {
-		return Arrays.stream(ActionTypeEnums.values()).filter(x -> x.getType() == type).findFirst().get();
+		return Arrays.stream(ActionTypeEnums.values()).filter(x -> x.getType().equals(type)).findFirst().orElse(DEFAULT);
 	}
 }

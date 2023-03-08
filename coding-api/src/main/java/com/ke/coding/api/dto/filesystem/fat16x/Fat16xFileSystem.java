@@ -47,4 +47,10 @@ public class Fat16xFileSystem {
 		dataRegion = new DataRegion();
 		idleClusterSize = dataRegion.getClusters().length;
 	}
+
+	public void format(){
+		fatRegion.format();
+		rootDirectoryRegion.format();
+		dataRegion.format();
+	}
 }

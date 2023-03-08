@@ -23,6 +23,10 @@ public class FatRegion {
 	 */
 	private Fat[] fats = new Fat[65536];
 
+	public void format(){
+		fats = new Fat[65536];
+	}
+
 	public void save(int index, String ncStatus) {
 		fats[index] = fats[index] == null ? new Fat() : fats[index];
 		fats[index].save(HexByteUtil.hexToByteArray(ncStatus));

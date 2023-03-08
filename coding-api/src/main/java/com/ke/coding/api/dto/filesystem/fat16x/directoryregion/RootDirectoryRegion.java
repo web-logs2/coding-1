@@ -28,4 +28,8 @@ public class RootDirectoryRegion {
 		}
 		return -1;
 	}
+
+	public void format(){
+		directoryEntries = new DirectoryEntry[MAX_SIZE];
+	}
 }

@@ -35,7 +35,7 @@ public class CatAction extends AbstractAction {
 					int beginCluster = directoryEntry.getStartingCluster();
 					//文件之前未写入过内容
 					if (beginCluster == 0) {
-						return FileSystemActionResult.success();
+						return FileSystemActionResult.success("");
 					} else {
 						int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
 						byte[] dataBytes = new byte[(int) directoryEntry.getFileSize()];
@@ -59,7 +59,7 @@ public class CatAction extends AbstractAction {
 						if (directoryEntry.getWholeFileName().equals(fileName)) {
 							//文件之前未写入过内容
 							if (directoryEntry.getStartingCluster() == 0) {
-								return FileSystemActionResult.success();
+								return FileSystemActionResult.success("");
 							} else {
 								int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(directoryEntry.getStartingCluster());
 								byte[] dataBytes = new byte[(int) directoryEntry.getFileSize()];
@@ -86,7 +86,7 @@ public class CatAction extends AbstractAction {
 										if (currentPathDirectoryEntry.getWholeFileName().equals(fileName)) {
 											//文件之前未写入过内容
 											if (currentPathDirectoryEntry.getStartingCluster() == 0) {
-												return FileSystemActionResult.success();
+												return FileSystemActionResult.success("");
 											} else {
 												int[] index = fat16xFileSystem.getFatRegion()
 													.allOfFileClusterIndex(currentPathDirectoryEntry.getStartingCluster());

@@ -17,6 +17,8 @@ public class Command {
 
 	private String currentPath;
 
+	private String originData;
+
 	public static Command build(String action, String currentPath, List<String> params){
 		Command command = new Command();
 		command.setAction(action);

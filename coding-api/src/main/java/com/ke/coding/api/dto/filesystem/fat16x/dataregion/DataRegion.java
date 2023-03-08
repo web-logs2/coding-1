@@ -23,6 +23,10 @@ public class DataRegion {
 	 */
 	private DataCluster[] clusters = new DataCluster[65516];
 
+	public void format(){
+		clusters = new DataCluster[65516];
+	}
+
 	public DataCluster[] findClusters(int[] index) {
 		DataCluster[] result = new DataCluster[index.length];
 		for (int i = 0; i < index.length; i++) {
