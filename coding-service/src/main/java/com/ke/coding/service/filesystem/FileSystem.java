@@ -11,6 +11,14 @@ import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
 public interface FileSystem {
 
 	/**
+	 * 执行
+	 *
+	 * @param command          命令
+	 * @return {@link FileSystemActionResult}
+	 */
+	FileSystemActionResult execute(Command command);
+
+	/**
 	 * mkdir
 	 *
 	 * @param command 命令

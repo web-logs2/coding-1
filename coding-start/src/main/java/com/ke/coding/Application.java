@@ -1,18 +1,18 @@
 package com.ke.coding;
 
-import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import org.springframework.boot.SpringApplication;
-import org.springframework.cloud.client.SpringCloudApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * 服务启动类
  *
  * @author keboot
  */
-@EnableApolloConfig
-@SpringCloudApplication
+@SpringBootApplication
 public class Application {
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
+
 }

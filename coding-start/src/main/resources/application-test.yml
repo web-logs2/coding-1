@@ -53,6 +53,12 @@ ribbon:
 # ----- 日志级别配置 测试环境 -----
 logging:
   level:
-    root: DEBUG
+    root: INFO
     org:
-      springframework: DEBUG
+      springframework: INFO
+datasource:
+  pool:
+    default:
+      url: jdbc:mysql://m10625.mars.test.mysql.ljnode.com:10625/risk_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+      username: riskPlatform
+      password: 123456

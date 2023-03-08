@@ -14,8 +14,8 @@ spring:
     name: coding
   config:
     apollo:
-      server: http://dev.config.apollo.ke.com
-      environment: DEV
+      server: http://test.config.apollo.ke.com
+      environment: TEST
       auto-update-injected: true
   discovery:
     client:
@@ -24,8 +24,11 @@ spring:
   sentinel:
     statistic:
       max-rt-ms: 4900
+  profiles:
+    active: test
 hawk:
-  app-name: ${spring.application.name}
+  app-name: ${MODULE:${spring.application.name}}
   server:
     host: test-collect.hawk.lianjia.com
     socket-port: 14604
+

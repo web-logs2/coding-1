@@ -11,16 +11,37 @@ import lombok.Data;
 @Data
 public class Command {
 
-	private String option;
+	private String action;
 
 	private List<String> params;
 
 	private String currentPath;
 
+	public static Command build(String action, String currentPath, List<String> params){
+		Command command = new Command();
+		command.setAction(action);
+		command.setCurrentPath(currentPath);
+		command.setParams(params);
+		return command;
+	}
+
 	public static Command build(String currentPath, List<String> params){
 		Command command = new Command();
 		command.setCurrentPath(currentPath);
 		command.setParams(params);
+		return command;
+	}
+
+	public static Command build(String action, String currentPath){
+		Command command = new Command();
+		command.setCurrentPath(currentPath);
+		command.setAction(action);
+		return command;
+	}
+
+	public static Command build(String currentPath){
+		Command command = new Command();
+		command.setCurrentPath(currentPath);
 		return command;
 	}
 

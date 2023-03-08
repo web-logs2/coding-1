@@ -93,6 +93,9 @@ public class FatRegion {
 	 * @return int
 	 */
 	public int[] allOfFileClusterIndex(int startingCluster) {
+		if (startingCluster == 0){
+			return new int[1];
+		}
 		List<Integer> data = new ArrayList<>();
 		data.add(startingCluster);
 		int startIndex = startingCluster;

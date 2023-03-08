@@ -10,6 +10,7 @@ public enum ErrorCodeEnum {
 	FILENAME_LENGTH_TOO_LONG("1003", "文件名称过长"),
 	DIR_DATA_ERROR("1004", "目录数据异常"),
 	NO_SUCH_FILE_OR_DIRECTORY("1005", "No such file or directory"),
+	ACTION_NOT_FOUND("1006", "当前命令不存在"),
 
 	;
 

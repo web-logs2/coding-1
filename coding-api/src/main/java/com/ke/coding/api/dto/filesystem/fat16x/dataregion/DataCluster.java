@@ -47,6 +47,7 @@ public class DataCluster {
 			if (sectors[i] == null) {
 				sectors[i] = new DataSector();
 				sectors[i].appendSaveDir(data, 0);
+				return true;
 			} else {
 				//sector不为null时，寻找到起始的空闲下标
 				int i1 = sectors[i].freeSpaceIndexForDir(data.length);
