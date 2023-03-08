@@ -13,10 +13,12 @@ public interface FileSystem {
 	/**
 	 * 执行
 	 *
-	 * @param command          命令
+	 * @param command 命令
 	 * @return {@link FileSystemActionResult}
 	 */
-	FileSystemActionResult execute(Command command);
+	default FileSystemActionResult execute(Command command) {
+		return null;
+	}
 
 	/**
 	 * mkdir
@@ -24,7 +26,9 @@ public interface FileSystem {
 	 * @param command 命令
 	 * @return {@link FileSystemActionResult}
 	 */
-	FileSystemActionResult mkdir(Command command);
+	default FileSystemActionResult mkdir(Command command) {
+		return null;
+	}
 
 
 	/**
@@ -33,7 +37,9 @@ public interface FileSystem {
 	 * @param command 命令
 	 * @return {@link FileSystemActionResult}
 	 */
-	FileSystemActionResult touch(Command command);
+	default FileSystemActionResult touch(Command command) {
+		return null;
+	}
 
 	/**
 	 * ls
@@ -41,7 +47,9 @@ public interface FileSystem {
 	 * @param command 命令
 	 * @return {@link FileSystemActionResult}
 	 */
-	FileSystemActionResult ls(Command command);
+	default FileSystemActionResult ls(Command command) {
+		return null;
+	}
 
 	/**
 	 * echo
@@ -49,7 +57,9 @@ public interface FileSystem {
 	 * @param command 命令
 	 * @return {@link FileSystemActionResult}
 	 */
-	FileSystemActionResult echo(Command command);
+	default FileSystemActionResult echo(Command command) {
+		return null;
+	}
 
 	/**
 	 * cat
@@ -57,5 +67,7 @@ public interface FileSystem {
 	 * @param command 命令
 	 * @return {@link FileSystemActionResult}
 	 */
-	FileSystemActionResult cat(Command command);
+	default FileSystemActionResult cat(Command command) {
+		return null;
+	}
 }
