@@ -1,4 +1,4 @@
-package com.ke.coding.service.filesystem.impl;
+package com.ke.coding.service.filesystem.fatservice.impl;
 
 import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY;
 import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY_POS;
@@ -20,7 +20,7 @@ import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataSector;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
-import com.ke.coding.service.filesystem.AbstractFileSystem;
+import com.ke.coding.service.filesystem.fatservice.AbstractFileSystem;
 import com.ke.risk.safety.common.util.json.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;

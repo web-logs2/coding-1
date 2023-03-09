@@ -1,33 +1,13 @@
-package com.ke.coding.service.filesystem.impl;
+package com.ke.coding.service.filesystem.fatservice.impl;
 
-import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY;
-import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY_POS;
-import static com.ke.coding.api.enums.Constants.DIRECTORY_ENTRY_SIZE;
-import static com.ke.coding.api.enums.Constants.FAT_NC_END_OF_FILE;
-import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
-import static com.ke.coding.api.enums.Constants.PER_CLUSTER_SECTOR;
-import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
-import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_NOT_FOUND;
-import static com.ke.coding.api.enums.ErrorCodeEnum.DIR_DATA_ERROR;
-import static com.ke.coding.api.enums.ErrorCodeEnum.DIR_LENGTH_TOO_LONG;
-import static com.ke.coding.api.enums.ErrorCodeEnum.FILENAME_LENGTH_TOO_LONG;
-import static com.ke.coding.api.enums.ErrorCodeEnum.INSUFFICIENT_SPACE;
-import static com.ke.coding.api.enums.ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
-import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
-import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataSector;
-import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import com.ke.coding.api.enums.ActionTypeEnums;
-import com.ke.coding.service.filesystem.FileSystem;
 import com.ke.coding.service.filesystem.action.Action;
-import com.ke.risk.safety.common.util.json.JsonUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.ke.coding.service.filesystem.fatservice.FileSystem;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.BeansException;
@@ -41,7 +21,7 @@ import org.springframework.stereotype.Service;
  * @description:
  */
 @Service
-public class Fat16xFileSystemService implements FileSystem , ApplicationContextAware {
+public class Fat16xFileSystemService implements FileSystem, ApplicationContextAware {
 
 	@Getter
 	private static ApplicationContext applicationContext;
