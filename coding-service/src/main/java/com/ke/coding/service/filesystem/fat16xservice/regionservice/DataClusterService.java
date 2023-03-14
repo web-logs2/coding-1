@@ -28,7 +28,7 @@ public class DataClusterService {
 	 * @return {@link byte[]}
 	 */
 	public byte[] getAllData(int clusterIndex) {
-		return disk.readSector(289 + clusterIndex * PER_CLUSTER_SECTOR, PER_SECTOR_BYTES * PER_CLUSTER_SECTOR);
+		return disk.readSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR,  PER_CLUSTER_SECTOR);
 	}
 
 	/**
@@ -62,8 +62,8 @@ public class DataClusterService {
 			for (int i = 0; i < (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR / DIRECTORY_ENTRY_SIZE); i++) {
 				System.arraycopy(allData, i * DIRECTORY_ENTRY_SIZE, temp, 0, DIRECTORY_ENTRY_SIZE);
 				if (ArrayUtils.isEmpty(temp)) {
-					System.arraycopy(data, DIRECTORY_ENTRY_SIZE, allData, 0, i * DIRECTORY_ENTRY_SIZE);
-					disk.writeSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR, data);
+					System.arraycopy(data, 0, allData, i * DIRECTORY_ENTRY_SIZE, DIRECTORY_ENTRY_SIZE);
+					disk.writeSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR, allData);
 					return true;
 				}
 			}
@@ -123,6 +123,7 @@ public class DataClusterService {
 			byte[] allData = getAllData(index[i]);
 			DataCluster dataCluster = new DataCluster();
 			dataCluster.save(allData);
+			dataCluster.setIndex(index[i]);
 			result[i] = dataCluster;
 		}
 		return result;

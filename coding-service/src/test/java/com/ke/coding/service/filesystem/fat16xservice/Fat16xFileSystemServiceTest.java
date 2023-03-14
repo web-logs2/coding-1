@@ -3,7 +3,15 @@ package com.ke.coding.service.filesystem.fat16xservice;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
+import com.ke.coding.api.enums.ActionTypeEnums;
+import com.ke.coding.service.disk.FileDisk;
+import com.ke.coding.service.disk.IDisk;
+import com.ke.coding.service.filesystem.action.impl.MkdirAction;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xFileSystemService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataClusterService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataRegionService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.FatRegionService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.RootDirectoryRegionService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Assert;
@@ -16,7 +24,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource("classpath:test.properties")
-@Import(Fat16xFileSystemService.class)
+@Import({MkdirAction.class, Fat16xFileSystemService.class, FileDisk.class,  DataRegionService.class, DataClusterService.class,
+	FatRegionService.class, RootDirectoryRegionService.class})
 public class Fat16xFileSystemServiceTest {
 
 	@Autowired
@@ -32,21 +41,22 @@ public class Fat16xFileSystemServiceTest {
 		/test/222/xyl1
 		 */
 		Command command = new Command();
+		command.setAction(ActionTypeEnums.MKDIR.getType());
 		command.setParams(Collections.singletonList("test"));
 		command.setCurrentPath("/");
-		fat16xFileSystemService.mkdir(command);
+		fat16xFileSystemService.execute(command);
 		command.setParams(Collections.singletonList("111"));
 		command.setCurrentPath("/test");
-		fat16xFileSystemService.mkdir(command);
+		fat16xFileSystemService.execute(command);
 		command.setParams(Collections.singletonList("222"));
 		command.setCurrentPath("/test");
-		fat16xFileSystemService.mkdir(command);
+		fat16xFileSystemService.execute(command);
 		command.setParams(Collections.singletonList("xyl"));
 		command.setCurrentPath("/test/222");
-		fat16xFileSystemService.mkdir(command);
+		fat16xFileSystemService.execute(command);
 		command.setParams(Collections.singletonList("xyl1"));
 		command.setCurrentPath("/test/222");
-		fat16xFileSystemService.mkdir(command);
+		fat16xFileSystemService.execute(command);
 	}
 
 	@Test

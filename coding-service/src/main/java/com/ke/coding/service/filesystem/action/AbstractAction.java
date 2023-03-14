@@ -42,9 +42,10 @@ public abstract class AbstractAction implements Action {
 		String[] split = currentPath.split(PATH_SPLIT);
 		String path = split[1];
 		DirectoryEntry directoryEntry = null;
-		for (DirectoryEntry tempEntry : fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()) {
-			if (tempEntry != null && tempEntry.getFileName().equals(path)) {
-				directoryEntry = tempEntry;
+		for (int i = 0; i < fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries().length; i++) {
+			if (fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i] != null && fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i].getFileName().equals(path)) {
+				directoryEntry = fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i];
+				directoryEntry.setIndex(i);
 			}
 		}
 		return directoryEntry;
@@ -141,6 +142,7 @@ public abstract class AbstractAction implements Action {
 											directoryEntry.setStartingCluster(firstFreeFat);
 											//directoryEntry是从原来的数据读取出来的，所以更新后，数据要刷回去
 											System.arraycopy(directoryEntry.getData(), 0, sector.getData(), begin, DIRECTORY_ENTRY_SIZE);
+											dataRegionService.updateDirInfo(cluster);
 											//保存数据区域数据
 											dataRegionService.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
 											//保存fat区数据

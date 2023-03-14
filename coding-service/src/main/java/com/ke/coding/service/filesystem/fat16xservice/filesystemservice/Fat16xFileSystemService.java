@@ -37,6 +37,7 @@ public class Fat16xFileSystemService implements FileSystem, ApplicationContextAw
 	@Getter
 	private static ApplicationContext applicationContext;
 
+	@Getter
 	Fat16xFileSystem fat16xFileSystem;
 
 	@Autowired

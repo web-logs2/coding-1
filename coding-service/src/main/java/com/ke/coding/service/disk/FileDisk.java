@@ -22,6 +22,15 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public byte[] readSector(int sectorIdx) {
+		Resource resource = new ClassPathResource("filedata.data");
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(resource.getFile(), "r")) {
+			byte[] result = new byte[sectorSize()];
+			randomAccessFile.seek((long) sectorIdx * sectorSize());
+			randomAccessFile.read(result, 0, sectorSize());
+			return result;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return new byte[0];
 	}
 
@@ -34,7 +43,7 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public byte[] readSector(int sectorIndex, int count) {
-		Resource resource = new ClassPathResource("filedata");
+		Resource resource = new ClassPathResource("filedata.data");
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(resource.getFile(), "r")) {
 			byte[] result = new byte[count * sectorSize()];
 			randomAccessFile.seek((long) sectorIndex * sectorSize());
@@ -54,7 +63,7 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public void writeSector(int sectorIdx, byte[] sectorData) {
-		Resource resource = new ClassPathResource("filedata");
+		Resource resource = new ClassPathResource("filedata.data");
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(resource.getFile(), "rw");) {
 			randomAccessFile.seek((long) sectorIdx * sectorSize());
 			randomAccessFile.write(sectorData);
@@ -72,7 +81,7 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public void appendWriteSector(int sectorIdx, byte[] sectorData, int beginIndex) {
-		Resource resource = new ClassPathResource("filedata");
+		Resource resource = new ClassPathResource("filedata.data");
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(resource.getFile(), "rw");) {
 			randomAccessFile.seek((long) sectorIdx * sectorSize());
 			randomAccessFile.seek(beginIndex);

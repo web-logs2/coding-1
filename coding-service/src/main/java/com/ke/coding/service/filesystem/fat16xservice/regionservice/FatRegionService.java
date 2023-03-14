@@ -31,7 +31,7 @@ public class FatRegionService {
 		int sectorIndex = (index * FAT_ENTRY_SIZE) / disk.sectorSize();
 		int sectorDataSize = (index * FAT_ENTRY_SIZE) % disk.sectorSize();
 		byte[] bytes = disk.readSector(FAT_START + sectorIndex);
-		System.arraycopy(bytes, sectorDataSize, fatRegion.getFats()[index].getFatData(), 0, DIRECTORY_ENTRY_SIZE);
+		System.arraycopy(fatRegion.getFats()[index].getFatData(), 0, bytes, sectorDataSize, FAT_ENTRY_SIZE);
 		disk.writeSector(FAT_START + sectorIndex, bytes);
 	}
 

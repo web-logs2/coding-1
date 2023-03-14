@@ -67,6 +67,7 @@ public class EchoAction extends AbstractAction {
 				touchAction.run(Command.build(currentPath, Collections.singletonList(wholeFileName)), fat16xFileSystem);
 				//保存目录和数据
 				saveFileDataAndUpdateDirectoryEntry(dataBytes, rootDirectoryEntry, fat16xFileSystem);
+				rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), rootDirectoryEntry.getIndex(), rootDirectoryEntry);
 			} else {
 				String[] split = currentPath.split(PATH_SPLIT);
 				//ex：/test/111
@@ -77,7 +78,6 @@ public class EchoAction extends AbstractAction {
 					if (!haveCreateFile) {
 						//先把文件搞出来
 						touchAction.run(Command.build(currentPath, Collections.singletonList(wholeFileName)), fat16xFileSystem);
-						;
 						//再保存一次
 						saveFatAndDataClusterForFileInFirstPath(rootStartingCluster, wholeFileName, dataBytes, fat16xFileSystem);
 					}
@@ -89,7 +89,6 @@ public class EchoAction extends AbstractAction {
 					if (!haveCreateFile) {
 						//先把文件搞出来
 						touchAction.run(Command.build(currentPath, Collections.singletonList(wholeFileName)), fat16xFileSystem);
-						;
 						//再保存一次
 						saveFatAndDataClusterForFileInSecondPath(currentPath, rootStartingCluster, wholeFileName, dataBytes, fat16xFileSystem);
 					}
@@ -166,7 +165,8 @@ public class EchoAction extends AbstractAction {
 	}
 
 	private boolean saveFatAndDataClusterForFileInRootRegion(String wholeFileName, byte[] dataBytes, Fat16xFileSystem fat16xFileSystem) {
-		for (DirectoryEntry directoryEntry : fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()) {
+		for (int i = 0; i < fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries().length; i++) {
+			DirectoryEntry directoryEntry = fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i];
 			if (directoryEntry == null) {
 				break;
 				//匹配到对应的文件
@@ -178,9 +178,11 @@ public class EchoAction extends AbstractAction {
 				} else {
 					appendSaveFatAndDataClusterForFile(dataBytes, directoryEntry, fat16xFileSystem);
 				}
+				rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), i, directoryEntry);
 				return true;
 			}
 		}
+
 		return false;
 	}
 
@@ -270,6 +272,7 @@ public class EchoAction extends AbstractAction {
 								}
 								//数据一定要刷回去
 								System.arraycopy(directoryEntry.getData(), 0, sector.getData(), begin, DIRECTORY_ENTRY_SIZE);
+								dataRegionService.updateDirInfo(cluster);
 								haveCreatedFile = true;
 							}
 							begin += DIRECTORY_ENTRY_SIZE;

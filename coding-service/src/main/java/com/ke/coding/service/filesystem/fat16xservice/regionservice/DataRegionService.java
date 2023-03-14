@@ -61,6 +61,10 @@ public class DataRegionService {
 		}
 	}
 
+	public void updateDirInfo(DataCluster dataCluster) {
+		clusterService.save(dataCluster.getIndex(), dataCluster.getAllData());
+	}
+
 	/**
 	 * 保存文件数据
 	 *

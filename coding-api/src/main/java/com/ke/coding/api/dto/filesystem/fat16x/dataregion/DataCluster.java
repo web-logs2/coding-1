@@ -1,5 +1,7 @@
 package com.ke.coding.api.dto.filesystem.fat16x.dataregion;
 
+import static com.ke.coding.api.enums.Constants.PER_CLUSTER_SECTOR;
+import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
 import static com.ke.coding.common.ArrayUtils.array2List;
 import static com.ke.coding.common.ArrayUtils.list2Ary;
 
@@ -19,7 +21,7 @@ public class DataCluster {
 	 * 默认有64个扇区
 	 */
 	private DataSector[] sectors = new DataSector[64];
-
+	private int index;
 	/**
 	 * 首次集群保存数据，可以快速赋值替换
 	 *
@@ -31,5 +33,14 @@ public class DataCluster {
 			sectors[i] = new DataSector();
 			sectors[i].save(list2Ary(lists.get(i)));
 		}
+	}
+
+	public byte[] getAllData(){
+		byte[] result = new byte[PER_SECTOR_BYTES * PER_CLUSTER_SECTOR];
+		for (int i = 0; i < sectors.length; i++) {
+			DataSector sector = sectors[i];
+			System.arraycopy(sector.getData(), 0, result, i * PER_SECTOR_BYTES, PER_SECTOR_BYTES);
+		}
+		return result;
 	}
 }

@@ -20,12 +20,12 @@ public class RootDirectoryRegionService {
 	@Autowired
 	IDisk disk;
 
-	public void save(RootDirectoryRegion rootDirectoryRegion, int index, DirectoryEntry directoryEntry){
+	public void save(RootDirectoryRegion rootDirectoryRegion, int index, DirectoryEntry directoryEntry) {
 		rootDirectoryRegion.getDirectoryEntries()[index] = directoryEntry;
 		int sectorIndex = (index * DIRECTORY_ENTRY_SIZE) / disk.sectorSize();
 		int sectorDataSize = (index * DIRECTORY_ENTRY_SIZE) % disk.sectorSize();
 		byte[] bytes = disk.readSector(ROOT_DIRECTORY_START + sectorIndex);
-		System.arraycopy(bytes, sectorDataSize, directoryEntry.getData(), 0, DIRECTORY_ENTRY_SIZE);
+		System.arraycopy(directoryEntry.getData(), 0, bytes, sectorDataSize, DIRECTORY_ENTRY_SIZE);
 		disk.writeSector(ROOT_DIRECTORY_START + sectorIndex, bytes);
 	}
 
