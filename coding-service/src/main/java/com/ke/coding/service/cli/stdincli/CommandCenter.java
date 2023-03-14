@@ -96,8 +96,10 @@ public class CommandCenter {
 	}
 
 	public String format() {
-		fileSystem.execute(Command.build("format", currentPath));
-		return fileSystem.execute(Command.build("cd", currentPath, Collections.singletonList(ROOT_PATH))).getData();
+		FileSystemActionResult format = fileSystem.execute(Command.build("format", currentPath));
+		FileSystemActionResult cd = fileSystem.execute(Command.build("cd", currentPath, Collections.singletonList(ROOT_PATH)));
+		currentPath = cd.getData();
+		return format.getData();
 	}
 
 	public String pwd() {

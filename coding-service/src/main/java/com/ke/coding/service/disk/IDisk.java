@@ -53,4 +53,6 @@ public interface IDisk {
 	default long sectorCount() {
 		return 2 * 1024 * 1024 * 1024L / 512;
 	}
+
+	void format();
 }

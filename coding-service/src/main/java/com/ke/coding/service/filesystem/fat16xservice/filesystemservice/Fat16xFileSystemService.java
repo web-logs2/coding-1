@@ -54,7 +54,7 @@ public class Fat16xFileSystemService implements FileSystem, ApplicationContextAw
 	 * 初始化文件系统
 	 */
 	@PostConstruct
-	void init() {
+	public void init() {
 		fat16xFileSystem = new Fat16xFileSystem();
 		fat16xFileSystem.setReservedRegion(new BootSector(iDisk.readSector(BOOT_SECTOR_START, BOOT_SECTOR_SIZE)));
 		fat16xFileSystem.setRootDirectoryRegion(new RootDirectoryRegion(iDisk.readSector(ROOT_DIRECTORY_START, ROOT_DIRECTORY_SIZE)));

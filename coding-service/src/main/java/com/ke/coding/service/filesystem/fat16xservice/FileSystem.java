@@ -70,4 +70,8 @@ public interface FileSystem {
 	default FileSystemActionResult cat(Command command) {
 		return null;
 	}
+
+	default FileSystemActionResult format(Command command) {
+		return null;
+	}
 }

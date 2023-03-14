@@ -1,5 +1,6 @@
 package com.ke.coding.service.disk;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import org.springframework.core.io.ClassPathResource;
@@ -86,6 +87,17 @@ public class FileDisk implements IDisk {
 			randomAccessFile.seek((long) sectorIdx * sectorSize());
 			randomAccessFile.seek(beginIndex);
 			randomAccessFile.write(sectorData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void format() {
+		Resource resource = new ClassPathResource("filedata.data");
+		try (FileWriter fileWriter =new FileWriter(resource.getFile());) {
+			fileWriter.write("");
+			fileWriter.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
