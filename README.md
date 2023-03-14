@@ -14,12 +14,18 @@ coding
 
 ###1.3.1 数据结构
 ![img_2.png](img_2.png)![img_1.png](img_1.png)
-###1.3.1.1 Boot Sector功能点
+###1.3.1.1 Boot Sector
+占用空间：512 bytes，1个扇区
+
     1、jump code干啥用的？
-###1.3.1.2 FAT功能点
+###1.3.1.2 FAT
+占用空间：65536 * 2bytes = 131072bytes，256个扇区
+
     1、通过数组+链表维护所有的cluster信息
     2、文件可以存在于多个cluster中，每个cluster所在的坐标的数值，代表该cluster后续的状态：空，nextCluster，endFile
-###1.3.1.3 Root Directory功能点
+###1.3.1.3 Root Directory
+占用空间：512 * 32 bytes = 16384bytes, 32个扇区
+
     1、ascii码与16进制相互转换
     2、文件属性枚举，对文件执行相关指令时，添加属性限制：比如只读文件，不可以执行echo写入指令
     3、文件名与文件拓展名长度限制
@@ -27,7 +33,9 @@ coding
     5、更新写操作时间
     6、需要维护目录和文件的路径关系，支持ls,cd,pwd命令
     7、根据boot sector的配置，初始化directory entry array的size
-###1.3.1.4 Data Region功能点
+###1.3.1.4 Data Region
+占用空间：65536 * 64 * 512 = 2147483648bytes， 4194304个扇区
+
     1、建模：cluster
     2、cluster存储方式对比：
         a.每个cluster只允许存储一个文件or一个文件剩余的一部分。

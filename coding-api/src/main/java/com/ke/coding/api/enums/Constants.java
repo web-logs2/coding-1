@@ -32,10 +32,25 @@ public class Constants {
 	public static final int PER_SECTOR_BYTES = 512;
 	public static final int PER_CLUSTER_SECTOR = 64;
 	public static final int DIRECTORY_ENTRY_SIZE = 32;
+	public static final int FAT_ENTRY_SIZE = 2;
+	public static final int DATA_CLUSTER_ENTRY_SIZE = 2;
+	public static final int DATA_CLUSTER_SIZE = 65519;
 
 	public static final String FAT_NC_FREE_CLUSTER = "0000";
 	public static final String FAT_NC_NOT_ALLOWED = "0001";
 	public static final String FAT_NC_BAD_SECTOR = "fff7";
 	public static final String FAT_NC_END_OF_FILE = "fff8";
+
+	public static final int BOOT_SECTOR_START = 0;
+	public static final int BOOT_SECTOR_SIZE = 1;
+
+	public static final int FAT_START = 1;
+	public static final int FAT_SIZE = 256;
+
+	public static final int ROOT_DIRECTORY_START = 257;
+	public static final int ROOT_DIRECTORY_SIZE = 32;
+
+	public static final int DATA_REGION_START = 289;
+	public static final int DATA_REGION_SIZE = 4194016;
 
 }

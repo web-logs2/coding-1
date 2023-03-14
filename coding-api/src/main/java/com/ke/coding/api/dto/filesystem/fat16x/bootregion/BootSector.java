@@ -12,4 +12,9 @@ public class BootSector extends Sector {
 	private final byte bytesPerSector = (byte) 512;
 	private final byte sectorsPerCluster = (byte) 64;
 
+	private byte[] data = new byte[512];
+
+	public BootSector(byte[] data) {
+		this.data = data;
+	}
 }

@@ -34,18 +34,14 @@ public class MkdirAction extends AbstractAction {
 		if (ROOT_PATH.equals(currentPath) && !hasIdleRootDirectorySpace(fat16xFileSystem)) {
 			return FileSystemActionResult.fail(INSUFFICIENT_SPACE);
 		}
-		//step: 目录数据需要写入cluster，判断剩余cluster空间是否充足
-		if (fat16xFileSystem.getIdleClusterSize() <= 0) {
-			return FileSystemActionResult.fail(INSUFFICIENT_SPACE);
-		}
 
 		DirectoryEntry newDirectoryEntry = DirectoryEntry.buildDir(newDir, ATTRIBUTE_DIRECTORY);
 		//currentPath=/, param1=test
 		//step: 根目录，不需要存储cluster。
 		if (ROOT_PATH.equals(currentPath)) {
 			//step:直接保存至RootDirectoryRegion
-			fat16xFileSystem.getRootDirectoryRegion().
-				getDirectoryEntries()[fat16xFileSystem.getRootDirectoryRegion().freeIndex()] = newDirectoryEntry;
+			rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), fat16xFileSystem.getRootDirectoryRegion().freeIndex(),
+				newDirectoryEntry);
 		} else {
 			//currentPath=/test, param1=111
 			//step：非根目录，寻根目录节点
@@ -55,10 +51,14 @@ public class MkdirAction extends AbstractAction {
 			if (startingCluster == 0) {
 				//选择空闲的cluster，并把当前创建的目录数据写入
 				int firstFreeFat = fat16xFileSystem.getFatRegion().firstFreeFat();
+				//目录数据需要写入cluster，判断剩余cluster空间是否充足
+				if (firstFreeFat == -1) {
+					return FileSystemActionResult.fail(INSUFFICIENT_SPACE);
+				}
 				//保存数据区域数据
-				fat16xFileSystem.getDataRegion().saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
+				dataRegionService.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
 				//保存fat区数据
-				fat16xFileSystem.getFatRegion().save(firstFreeFat, FAT_NC_END_OF_FILE);
+				fatRegionService.save(firstFreeFat, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
 				rootDirectoryEntry.setStartingCluster(firstFreeFat);
 			} else {
 				String[] split = currentPath.split(PATH_SPLIT);

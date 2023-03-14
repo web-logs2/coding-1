@@ -130,7 +130,7 @@ public class EchoAction extends AbstractAction {
 		for (int i = 2; i < splitPath.length; i++) {
 			//找到对应的全部目录cluster
 			int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-			DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+			DataCluster[] clusters = dataRegionService.findClusters(index);
 			for (DataCluster cluster : clusters) {
 				if (cluster != null) {
 					//遍历所有扇区
@@ -149,11 +149,6 @@ public class EchoAction extends AbstractAction {
 									if (directoryEntry.getStartingCluster() == 0) {
 										//先把文件搞出来
 										touchAction.run(Command.build(currentPath, Collections.singletonList(fileName)), fat16xFileSystem);
-										;
-//										//保存目录和数据
-//										saveFileDataAndUpdateDirectoryEntry(dataBytes, directoryEntry);
-//										//数据刷回去
-//										System.arraycopy(directoryEntry.getData(), 0, sector.getData(), begin, DIRECTORY_ENTRY_SIZE);
 									} else {
 										haveCreateFile = saveFatAndDataClusterForFileInCurrentPath(directoryEntry.getStartingCluster(), fileName,
 											dataBytes, fat16xFileSystem);
@@ -197,9 +192,9 @@ public class EchoAction extends AbstractAction {
 	 */
 	private void saveFileDataAndUpdateDirectoryEntry(byte[] dataBytes, DirectoryEntry directoryEntry, Fat16xFileSystem fat16xFileSystem) {
 		//选择空闲的cluster，并把当前创建的目录数据写入
-		int[] fatArray = fat16xFileSystem.getFatRegion().freeFatArray(dataBytes.length);
+		int[] fatArray = fatRegionService.freeFatArray(dataBytes.length, fat16xFileSystem.getFatRegion());
 		//保存数据区域数据
-		fat16xFileSystem.getDataRegion().saveFile(dataBytes, fatArray);
+		dataRegionService.saveFile(dataBytes, fatArray);
 		//更新文件信息
 		directoryEntry.updateWriteInfo(dataBytes.length);
 		//更新初始坐标
@@ -220,21 +215,21 @@ public class EchoAction extends AbstractAction {
 			(int) (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR - directoryEntry.getFileSize() % (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR));
 		//文件size小于等于尾节点剩余空间，直接当前节点追加内容
 		if (dataBytes.length <= endOfFileClusterRemainSpace) {
-			fat16xFileSystem.getDataRegion().appendSaveFile(dataBytes, endOfFileCluster, (int) directoryEntry.getFileSize());
+			dataRegionService.appendSaveFile(dataBytes, endOfFileCluster, (int) directoryEntry.getFileSize());
 		} else {
 			//文件size大于尾节点剩余空间
 			byte[] appendSaveData = new byte[endOfFileClusterRemainSpace];
 			System.arraycopy(dataBytes, 0, appendSaveData, 0, endOfFileClusterRemainSpace);
 			//把当前节点装满
-			fat16xFileSystem.getDataRegion().appendSaveFile(appendSaveData, endOfFileCluster, (int) directoryEntry.getFileSize());
+			dataRegionService.appendSaveFile(appendSaveData, endOfFileCluster, (int) directoryEntry.getFileSize());
 			//申请新的数据集群列表保存剩余数据
-			int[] fatArray = fat16xFileSystem.getFatRegion().freeFatArray(dataBytes.length - endOfFileClusterRemainSpace);
+			int[] fatArray = fatRegionService.freeFatArray(dataBytes.length - endOfFileClusterRemainSpace, fat16xFileSystem.getFatRegion());
 			//保存数据区域数据
 			byte[] saveData = new byte[dataBytes.length - endOfFileClusterRemainSpace];
 			System.arraycopy(dataBytes, endOfFileClusterRemainSpace, saveData, 0, dataBytes.length - endOfFileClusterRemainSpace);
-			fat16xFileSystem.getDataRegion().saveFile(saveData, fatArray);
+			dataRegionService.saveFile(saveData, fatArray);
 			//原有链路的末尾，指向新申请的链表首部
-			fat16xFileSystem.getFatRegion().save(endOfFileCluster, String.format("%04x", fatArray[0]));
+			fatRegionService.save(endOfFileCluster, String.format("%04x", fatArray[0]), fat16xFileSystem.getFatRegion());
 		}
 		//更新文件大小,时间
 		directoryEntry.updateWriteInfo(directoryEntry.getFileSize() + dataBytes.length);
@@ -252,7 +247,7 @@ public class EchoAction extends AbstractAction {
 		boolean haveCreatedFile = false;
 		//找到对应的全部目录cluster
 		int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-		DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+		DataCluster[] clusters = dataRegionService.findClusters(index);
 		//遍历目录，找到对应的文件
 		for (DataCluster cluster : clusters) {
 			if (cluster != null) {

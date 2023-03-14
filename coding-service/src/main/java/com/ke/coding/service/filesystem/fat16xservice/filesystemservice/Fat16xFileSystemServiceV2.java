@@ -1,4 +1,4 @@
-package com.ke.coding.service.filesystem.fatservice.impl;
+package com.ke.coding.service.filesystem.fat16xservice.filesystemservice;
 
 import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY;
 import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY_POS;
@@ -20,11 +20,15 @@ import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataSector;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
-import com.ke.coding.service.filesystem.fatservice.AbstractFileSystem;
+import com.ke.coding.service.filesystem.fat16xservice.AbstractFileSystem;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataRegionService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.FatRegionService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.RootDirectoryRegionService;
 import com.ke.risk.safety.common.util.json.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -33,6 +37,14 @@ import java.util.List;
  */
 public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 
+	@Autowired
+	DataRegionService dataRegionService;
+
+	@Autowired
+	RootDirectoryRegionService rootDirectoryRegionService;
+
+	@Autowired
+	FatRegionService fatRegionService;
 
 	Fat16xFileSystem fat16xFileSystem;
 
@@ -66,18 +78,14 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 		if (ROOT_PATH.equals(currentPath) && !hasIdleRootDirectorySpace()) {
 			return FileSystemActionResult.fail(INSUFFICIENT_SPACE);
 		}
-		//step: 目录数据需要写入cluster，判断剩余cluster空间是否充足
-		if (fat16xFileSystem.getIdleClusterSize() <= 0) {
-			return FileSystemActionResult.fail(INSUFFICIENT_SPACE);
-		}
 
 		DirectoryEntry newDirectoryEntry = DirectoryEntry.buildDir(newDir, ATTRIBUTE_DIRECTORY);
 		//currentPath=/, param1=test
 		//step: 根目录，不需要存储cluster。
 		if (ROOT_PATH.equals(currentPath)) {
 			//step:直接保存至RootDirectoryRegion
-			fat16xFileSystem.getRootDirectoryRegion().
-				getDirectoryEntries()[fat16xFileSystem.getRootDirectoryRegion().freeIndex()] = newDirectoryEntry;
+			rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), fat16xFileSystem.getRootDirectoryRegion().freeIndex(),
+				newDirectoryEntry);
 		} else {
 			//currentPath=/test, param1=111
 			//step：非根目录，寻根目录节点
@@ -88,9 +96,9 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 				//选择空闲的cluster，并把当前创建的目录数据写入
 				int firstFreeFat = fat16xFileSystem.getFatRegion().firstFreeFat();
 				//保存数据区域数据
-				fat16xFileSystem.getDataRegion().saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
+				dataRegionService.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
 				//保存fat区数据
-				fat16xFileSystem.getFatRegion().save(firstFreeFat, FAT_NC_END_OF_FILE);
+				fatRegionService.save(firstFreeFat, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
 				rootDirectoryEntry.setStartingCluster(firstFreeFat);
 			} else {
 				String[] split = currentPath.split(PATH_SPLIT);
@@ -138,8 +146,8 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 		//step: 根下创建文件，不需要存储目录cluster
 		//ex：/xyl.jpg
 		if (ROOT_PATH.equals(currentPath)) {
-			fat16xFileSystem.getRootDirectoryRegion().
-				getDirectoryEntries()[fat16xFileSystem.getRootDirectoryRegion().freeIndex()] = newDirectoryEntry;
+			rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), fat16xFileSystem.getRootDirectoryRegion().freeIndex(),
+				newDirectoryEntry);
 		} else {
 			DirectoryEntry rootDirectoryEntry = findRootDirectoryEntry(currentPath, fat16xFileSystem);
 			if (rootDirectoryEntry == null) {
@@ -167,12 +175,12 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 	void createFileOrDirInFirstLevelPath(int beginCluster, DirectoryEntry newDirectoryEntry) {
 		int endOfFileCluster = fat16xFileSystem.getFatRegion().endOfFileCluster(beginCluster);
 		//保存目录信息至数据区域数据
-		int newEndOfFileCluster = fat16xFileSystem.getDataRegion().saveDir(newDirectoryEntry.getData(), endOfFileCluster,
+		int newEndOfFileCluster = dataRegionService.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
 			fat16xFileSystem);
 		if (endOfFileCluster != newEndOfFileCluster) {
 			//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
-			fat16xFileSystem.getFatRegion().save(newEndOfFileCluster, FAT_NC_END_OF_FILE);
-			fat16xFileSystem.getFatRegion().save(endOfFileCluster, String.format("%04x", newEndOfFileCluster));
+			fatRegionService.save(newEndOfFileCluster, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
+			fatRegionService.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster), fat16xFileSystem.getFatRegion());
 		}
 	}
 
@@ -187,7 +195,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 		for (int i = 2; i < split.length; i++) {
 			//找到对应的全部目录cluster
 			int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-			DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+			DataCluster[] clusters = dataRegionService.findClusters(index);
 			//循环跳出label，下边循环找到match的目录时，直接跳到这一层循环
 			outloop:
 			for (DataCluster cluster : clusters) {
@@ -215,24 +223,21 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 											//directoryEntry是从原来的数据读取出来的，所以更新后，数据要刷回去
 											System.arraycopy(directoryEntry.getData(), 0, sector.getData(), begin, DIRECTORY_ENTRY_SIZE);
 											//保存数据区域数据
-											fat16xFileSystem.getDataRegion()
-												.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
+											dataRegionService.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
 											//保存fat区数据
-											fat16xFileSystem.getFatRegion().save(firstFreeFat, FAT_NC_END_OF_FILE);
+											fatRegionService.save(firstFreeFat, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
 										} else {
 											//currentPath=/test/222, param1=xyl1.jpg
 											//beginCluster不为0,说明分配过cluster，直接追加内容
 											//通过beginCluster去查询fat区，查询后续的cluster
 											int endOfFileCluster = fat16xFileSystem.getFatRegion().endOfFileCluster(beginCluster);
 											//保存目录信息至数据区域数据
-											int newEndOfFileCluster = fat16xFileSystem.getDataRegion()
-												.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
-													fat16xFileSystem);
+											int newEndOfFileCluster = dataRegionService.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
+												fat16xFileSystem);
 											if (endOfFileCluster != newEndOfFileCluster) {
 												//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
-												fat16xFileSystem.getFatRegion().save(newEndOfFileCluster, FAT_NC_END_OF_FILE);
-												fat16xFileSystem.getFatRegion()
-													.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster));
+												fatRegionService.save(newEndOfFileCluster, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
+												fatRegionService.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster), fat16xFileSystem.getFatRegion());
 											}
 										}
 									}
@@ -281,7 +286,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 				for (int i = 2; i < splitPath.length; i++) {
 					//找到对应的全部目录cluster
 					int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-					DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+					DataCluster[] clusters = dataRegionService.findClusters(index);
 					//循环跳出label，下边循环找到match的目录时，直接跳到这一层循环
 					outloop:
 					for (DataCluster cluster : clusters) {
@@ -363,7 +368,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 				//先把文件搞出来
 				touch(Command.build(currentPath, Collections.singletonList(wholeFileName)));
 				//保存目录和数据
-				saveFileDataAndUpdateDirectoryEntry(dataBytes, rootDirectoryEntry);
+				saveFileDataAndUpdateDirectoryEntry(dataBytes, rootDirectoryEntry, fat16xFileSystem);
 			} else {
 				String[] split = currentPath.split(PATH_SPLIT);
 				//ex：/test/111
@@ -418,7 +423,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 					} else {
 						int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
 						byte[] dataBytes = new byte[(int) directoryEntry.getFileSize()];
-						fat16xFileSystem.getDataRegion().getClustersData(index, dataBytes);
+						dataRegionService.getClustersData(index, dataBytes);
 						directoryEntry.setLastAccessTimeStamp();
 						return FileSystemActionResult.success(new String(dataBytes));
 					}
@@ -438,7 +443,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 						if (directoryEntry.getWholeFileName().equals(fileName)) {
 							int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(directoryEntry.getStartingCluster());
 							byte[] dataBytes = new byte[(int) directoryEntry.getFileSize()];
-							fat16xFileSystem.getDataRegion().getClustersData(index, dataBytes);
+							dataRegionService.getClustersData(index, dataBytes);
 							directoryEntry.setLastAccessTimeStamp();
 							return FileSystemActionResult.success(new String(dataBytes));
 						}
@@ -460,7 +465,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 											int[] index = fat16xFileSystem.getFatRegion()
 												.allOfFileClusterIndex(currentPathDirectoryEntry.getStartingCluster());
 											byte[] dataBytes = new byte[(int) currentPathDirectoryEntry.getFileSize()];
-											fat16xFileSystem.getDataRegion().getClustersData(index, dataBytes);
+											dataRegionService.getClustersData(index, dataBytes);
 											currentPathDirectoryEntry.setLastAccessTimeStamp();
 											return FileSystemActionResult.success(new String(dataBytes));
 										}
@@ -486,7 +491,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 				int beginCluster = directoryEntry.getStartingCluster();
 				//文件之前未写入过内容
 				if (beginCluster == 0) {
-					saveFileDataAndUpdateDirectoryEntry(dataBytes, directoryEntry);
+					saveFileDataAndUpdateDirectoryEntry(dataBytes, directoryEntry, fat16xFileSystem);
 				} else {
 					appendSaveFatAndDataClusterForFile(dataBytes, directoryEntry);
 				}
@@ -513,7 +518,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 		for (int i = 2; i < splitPath.length; i++) {
 			//找到对应的全部目录cluster
 			int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-			DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+			DataCluster[] clusters = dataRegionService.findClusters(index);
 			for (DataCluster cluster : clusters) {
 				if (cluster != null) {
 					//遍历所有扇区
@@ -575,7 +580,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 		boolean haveCreatedFile = false;
 		//找到对应的全部目录cluster
 		int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-		DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+		DataCluster[] clusters = dataRegionService.findClusters(index);
 		//遍历目录，找到对应的文件
 		for (DataCluster cluster : clusters) {
 			if (cluster != null) {
@@ -592,7 +597,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 							if (directoryEntry.getWholeFileName().equals(fileName)) {
 								//文件之前未写入过内容
 								if (directoryEntry.getStartingCluster() == 0) {
-									saveFileDataAndUpdateDirectoryEntry(dataBytes, directoryEntry);
+									saveFileDataAndUpdateDirectoryEntry(dataBytes, directoryEntry, fat16xFileSystem);
 								} else {
 									appendSaveFatAndDataClusterForFile(dataBytes, directoryEntry);
 								}
@@ -615,11 +620,11 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 	 * @param dataBytes      数据字节
 	 * @param directoryEntry 目录条目
 	 */
-	private void saveFileDataAndUpdateDirectoryEntry(byte[] dataBytes, DirectoryEntry directoryEntry) {
+	private void saveFileDataAndUpdateDirectoryEntry(byte[] dataBytes, DirectoryEntry directoryEntry, Fat16xFileSystem fat16xFileSystem) {
 		//选择空闲的cluster，并把当前创建的目录数据写入
-		int[] fatArray = fat16xFileSystem.getFatRegion().freeFatArray(dataBytes.length);
+		int[] fatArray = fatRegionService.freeFatArray(dataBytes.length, fat16xFileSystem.getFatRegion());
 		//保存数据区域数据
-		fat16xFileSystem.getDataRegion().saveFile(dataBytes, fatArray);
+		dataRegionService.saveFile(dataBytes, fatArray);
 		//更新文件信息
 		directoryEntry.updateWriteInfo(dataBytes.length);
 		//更新初始坐标
@@ -640,21 +645,21 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 			(int) (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR - directoryEntry.getFileSize() % (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR));
 		//文件size小于等于尾节点剩余空间，直接当前节点追加内容
 		if (dataBytes.length <= endOfFileClusterRemainSpace) {
-			fat16xFileSystem.getDataRegion().appendSaveFile(dataBytes, endOfFileCluster, (int) directoryEntry.getFileSize());
+			dataRegionService.appendSaveFile(dataBytes, endOfFileCluster, (int) directoryEntry.getFileSize());
 		} else {
 			//文件size大于尾节点剩余空间
 			byte[] appendSaveData = new byte[endOfFileClusterRemainSpace];
 			System.arraycopy(dataBytes, 0, appendSaveData, 0, endOfFileClusterRemainSpace);
 			//把当前节点装满
-			fat16xFileSystem.getDataRegion().appendSaveFile(appendSaveData, endOfFileCluster, (int) directoryEntry.getFileSize());
+			dataRegionService.appendSaveFile(appendSaveData, endOfFileCluster, (int) directoryEntry.getFileSize());
 			//申请新的数据集群列表保存剩余数据
-			int[] fatArray = fat16xFileSystem.getFatRegion().freeFatArray(dataBytes.length - endOfFileClusterRemainSpace);
+			int[] fatArray = fatRegionService.freeFatArray(dataBytes.length - endOfFileClusterRemainSpace, fat16xFileSystem.getFatRegion());
 			//保存数据区域数据
 			byte[] saveData = new byte[dataBytes.length - endOfFileClusterRemainSpace];
 			System.arraycopy(dataBytes, endOfFileClusterRemainSpace, saveData, 0, dataBytes.length - endOfFileClusterRemainSpace);
-			fat16xFileSystem.getDataRegion().saveFile(saveData, fatArray);
+			dataRegionService.saveFile(saveData, fatArray);
 			//原有链路的末尾，指向新申请的链表首部
-			fat16xFileSystem.getFatRegion().save(endOfFileCluster, String.format("%04x", fatArray[0]));
+			fatRegionService.save(endOfFileCluster, String.format("%04x", fatArray[0]), fat16xFileSystem.getFatRegion());
 		}
 		//更新文件大小,时间
 		directoryEntry.updateWriteInfo(directoryEntry.getFileSize() + dataBytes.length);
@@ -664,7 +669,7 @@ public class Fat16xFileSystemServiceV2 extends AbstractFileSystem {
 		List<DirectoryEntry> directoryEntries = new ArrayList<>();
 		//找到对应的全部目录data cluster
 		int[] dataIndex = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(startingCluster);
-		DataCluster[] dataClusters = fat16xFileSystem.getDataRegion().findClusters(dataIndex);
+		DataCluster[] dataClusters = dataRegionService.findClusters(dataIndex);
 		//遍历所有目录集群信息
 		for (DataCluster cluster : dataClusters) {
 			if (cluster != null) {

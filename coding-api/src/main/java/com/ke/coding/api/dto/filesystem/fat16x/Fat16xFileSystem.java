@@ -35,17 +35,8 @@ public class Fat16xFileSystem {
 	 */
 	private DataRegion dataRegion;
 
-	/**
-	 * 存活的集群容量，便于进行空间大小比对
-	 */
-	private int idleClusterSize;
 
 	public Fat16xFileSystem() {
-		reservedRegion = new BootSector();
-		fatRegion  = new FatRegion();
-		rootDirectoryRegion = new RootDirectoryRegion();
-		dataRegion = new DataRegion();
-		idleClusterSize = dataRegion.getClusters().length;
 	}
 
 	public void format(){

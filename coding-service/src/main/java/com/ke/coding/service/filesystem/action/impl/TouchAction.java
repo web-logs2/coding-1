@@ -44,8 +44,8 @@ public class TouchAction extends AbstractAction {
 		//step: 根下创建文件，不需要存储目录cluster
 		//ex：/xyl.jpg
 		if (ROOT_PATH.equals(currentPath)) {
-			fat16xFileSystem.getRootDirectoryRegion().
-				getDirectoryEntries()[fat16xFileSystem.getRootDirectoryRegion().freeIndex()] = newDirectoryEntry;
+			rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), fat16xFileSystem.getRootDirectoryRegion().freeIndex(),
+				newDirectoryEntry);
 		} else {
 			DirectoryEntry rootDirectoryEntry = findRootDirectoryEntry(currentPath, fat16xFileSystem);
 			if (rootDirectoryEntry == null) {
@@ -60,7 +60,7 @@ public class TouchAction extends AbstractAction {
 						//先创建目录
 						int firstFreeFat = fat16xFileSystem.getFatRegion().firstFreeFat();
 						//保存fat区数据
-						fat16xFileSystem.getFatRegion().save(firstFreeFat, FAT_NC_END_OF_FILE);
+						fatRegionService.save(firstFreeFat, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
 						rootDirectoryEntry.setStartingCluster(firstFreeFat);
 						startingCluster = firstFreeFat;
 					}

@@ -1,4 +1,4 @@
-package com.ke.coding.service.filesystem.fatservice;
+package com.ke.coding.service.filesystem.fat16xservice;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemActionResult;

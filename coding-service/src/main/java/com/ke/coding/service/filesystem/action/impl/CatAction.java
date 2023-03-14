@@ -39,7 +39,7 @@ public class CatAction extends AbstractAction {
 					} else {
 						int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
 						byte[] dataBytes = new byte[(int) directoryEntry.getFileSize()];
-						fat16xFileSystem.getDataRegion().getClustersData(index, dataBytes);
+						dataRegionService.getClustersData(index, dataBytes);
 						directoryEntry.setLastAccessTimeStamp();
 						return FileSystemActionResult.success(new String(dataBytes));
 					}
@@ -63,7 +63,7 @@ public class CatAction extends AbstractAction {
 							} else {
 								int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(directoryEntry.getStartingCluster());
 								byte[] dataBytes = new byte[(int) directoryEntry.getFileSize()];
-								fat16xFileSystem.getDataRegion().getClustersData(index, dataBytes);
+								dataRegionService.getClustersData(index, dataBytes);
 								directoryEntry.setLastAccessTimeStamp();
 								return FileSystemActionResult.success(new String(dataBytes));
 							}
@@ -91,7 +91,7 @@ public class CatAction extends AbstractAction {
 												int[] index = fat16xFileSystem.getFatRegion()
 													.allOfFileClusterIndex(currentPathDirectoryEntry.getStartingCluster());
 												byte[] dataBytes = new byte[(int) currentPathDirectoryEntry.getFileSize()];
-												fat16xFileSystem.getDataRegion().getClustersData(index, dataBytes);
+												dataRegionService.getClustersData(index, dataBytes);
 												currentPathDirectoryEntry.setLastAccessTimeStamp();
 												return FileSystemActionResult.success(new String(dataBytes));
 											}

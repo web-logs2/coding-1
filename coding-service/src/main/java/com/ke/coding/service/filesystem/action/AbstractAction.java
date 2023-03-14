@@ -9,8 +9,12 @@ import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataSector;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataRegionService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.FatRegionService;
+import com.ke.coding.service.filesystem.fat16xservice.regionservice.RootDirectoryRegionService;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -19,6 +23,12 @@ import java.util.List;
  */
 public abstract class AbstractAction implements Action {
 
+	@Autowired
+	public DataRegionService dataRegionService;
+	@Autowired
+	public RootDirectoryRegionService rootDirectoryRegionService;
+	@Autowired
+	public FatRegionService fatRegionService;
 
 
 	/**
@@ -54,7 +64,7 @@ public abstract class AbstractAction implements Action {
 		List<DirectoryEntry> directoryEntries = new ArrayList<>();
 		//找到对应的全部目录data cluster
 		int[] dataIndex = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(startingCluster);
-		DataCluster[] dataClusters = fat16xFileSystem.getDataRegion().findClusters(dataIndex);
+		DataCluster[] dataClusters = dataRegionService.findClusters(dataIndex);
 		//遍历所有目录集群信息
 		for (DataCluster cluster : dataClusters) {
 			if (cluster != null) {
@@ -83,12 +93,12 @@ public abstract class AbstractAction implements Action {
 	public void createFileOrDirInFirstLevelPath(int beginCluster, DirectoryEntry newDirectoryEntry, Fat16xFileSystem fat16xFileSystem) {
 		int endOfFileCluster = fat16xFileSystem.getFatRegion().endOfFileCluster(beginCluster);
 		//保存目录信息至数据区域数据
-		int newEndOfFileCluster = fat16xFileSystem.getDataRegion().saveDir(newDirectoryEntry.getData(), endOfFileCluster,
+		int newEndOfFileCluster = dataRegionService.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
 			fat16xFileSystem);
 		if (endOfFileCluster != newEndOfFileCluster) {
 			//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
-			fat16xFileSystem.getFatRegion().save(newEndOfFileCluster, FAT_NC_END_OF_FILE);
-			fat16xFileSystem.getFatRegion().save(endOfFileCluster, String.format("%04x", newEndOfFileCluster));
+			fatRegionService.save(newEndOfFileCluster, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
+			fatRegionService.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster), fat16xFileSystem.getFatRegion());
 		}
 	}
 
@@ -104,7 +114,7 @@ public abstract class AbstractAction implements Action {
 		for (int i = 2; i < split.length; i++) {
 			//找到对应的全部目录cluster
 			int[] index = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(beginCluster);
-			DataCluster[] clusters = fat16xFileSystem.getDataRegion().findClusters(index);
+			DataCluster[] clusters = dataRegionService.findClusters(index);
 			//循环跳出label，下边循环找到match的目录时，直接跳到这一层循环
 			outloop:
 			for (DataCluster cluster : clusters) {
@@ -132,24 +142,21 @@ public abstract class AbstractAction implements Action {
 											//directoryEntry是从原来的数据读取出来的，所以更新后，数据要刷回去
 											System.arraycopy(directoryEntry.getData(), 0, sector.getData(), begin, DIRECTORY_ENTRY_SIZE);
 											//保存数据区域数据
-											fat16xFileSystem.getDataRegion()
-												.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
+											dataRegionService.saveDir(newDirectoryEntry.getData(), firstFreeFat, fat16xFileSystem);
 											//保存fat区数据
-											fat16xFileSystem.getFatRegion().save(firstFreeFat, FAT_NC_END_OF_FILE);
+											fatRegionService.save(firstFreeFat, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
 										} else {
 											//currentPath=/test/222, param1=xyl1.jpg
 											//beginCluster不为0,说明分配过cluster，直接追加内容
 											//通过beginCluster去查询fat区，查询后续的cluster
 											int endOfFileCluster = fat16xFileSystem.getFatRegion().endOfFileCluster(beginCluster);
 											//保存目录信息至数据区域数据
-											int newEndOfFileCluster = fat16xFileSystem.getDataRegion()
-												.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
+											int newEndOfFileCluster = dataRegionService.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
 													fat16xFileSystem);
 											if (endOfFileCluster != newEndOfFileCluster) {
 												//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
-												fat16xFileSystem.getFatRegion().save(newEndOfFileCluster, FAT_NC_END_OF_FILE);
-												fat16xFileSystem.getFatRegion()
-													.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster));
+												fatRegionService.save(newEndOfFileCluster, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
+												fatRegionService.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster), fat16xFileSystem.getFatRegion());
 											}
 										}
 									}

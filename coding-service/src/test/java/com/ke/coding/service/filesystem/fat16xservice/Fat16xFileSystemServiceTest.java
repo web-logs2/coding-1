@@ -1,9 +1,9 @@
-package com.ke.coding.service.filesystem.fatservice;
+package com.ke.coding.service.filesystem.fat16xservice;
 
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
-import com.ke.coding.service.filesystem.fatservice.impl.Fat16xFileSystemService;
+import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xFileSystemService;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Assert;
