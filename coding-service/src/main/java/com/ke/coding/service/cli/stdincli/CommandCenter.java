@@ -40,11 +40,14 @@ public class CommandCenter {
 	Pattern p1 = Pattern.compile("'(.*?)'");
 
 	public String run(Command command) {
-		String result = "";
+		String result;
 		command.setCurrentPath(currentPath);
 		switch (ActionTypeEnums.getByType(command.getAction())) {
 			case DEFAULT:
 				result = ACTION_NOT_FOUND.message();
+				break;
+			case CAT:
+				result = cat(command);
 				break;
 			case LL:
 				result = ll();
@@ -79,6 +82,19 @@ public class CommandCenter {
 				return fileSystem.execute(command).getData();
 		}
 		return result;
+	}
+
+	public String cat(Command command){
+		String[] s1 = command.getOriginData().split(" ");
+		if (s1.length != 2){
+			return ACTION_ERROR.message();
+		}
+		command.setParams(Collections.singletonList(s1[1]));
+		String data = fileSystem.execute(command).getData();
+		if (data.contains("\\n")){
+			data = data.replace("\\n", "\n");
+		}
+		return data;
 	}
 
 

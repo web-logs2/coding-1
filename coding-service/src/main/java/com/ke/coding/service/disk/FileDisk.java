@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import javax.annotation.PostConstruct;
 import jodd.io.FileUtil;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -16,19 +17,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileDisk implements IDisk {
 
+	@SneakyThrows
+	@PostConstruct
+	void init() {
+		boolean existingFile = FileUtil.isExistingFile(new File("filedata.data"));
+		if (!existingFile) {
+			new File("filedata.data").createNewFile();
+		}
+	}
+
 	/**
 	 * 读取一个指定扇区的数据。
 	 *
 	 * @param sectorIdx 扇区索引，起始索引为0，终止索引为 {@code sectorCount()-1}
 	 * @return 扇区数据，返回的字节数组长度必须等于{@code sectorSize()}
 	 */
-	@SneakyThrows
 	@Override
 	public byte[] readSector(int sectorIdx) {
-		boolean existingFile = FileUtil.isExistingFile(new File("filedata.data"));
-		if (!existingFile) {
-			new File("filedata.data").createNewFile();
-		}
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "r")) {
 			byte[] result = new byte[sectorSize()];
 			randomAccessFile.seek((long) sectorIdx * sectorSize());
@@ -50,10 +55,6 @@ public class FileDisk implements IDisk {
 	@SneakyThrows
 	@Override
 	public byte[] readSector(int sectorIndex, int count) {
-		boolean existingFile = FileUtil.isExistingFile(new File("filedata.data"));
-		if (!existingFile) {
-			new File("filedata.data").createNewFile();
-		}
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "r")) {
 			byte[] result = new byte[count * sectorSize()];
 			randomAccessFile.seek((long) sectorIndex * sectorSize());
@@ -91,8 +92,7 @@ public class FileDisk implements IDisk {
 	@Override
 	public void appendWriteSector(int sectorIdx, byte[] sectorData, int beginIndex) {
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "rw");) {
-			randomAccessFile.seek((long) sectorIdx * sectorSize());
-			randomAccessFile.seek(beginIndex);
+			randomAccessFile.seek((long) sectorIdx * sectorSize() + beginIndex);
 			randomAccessFile.write(sectorData);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,7 +101,7 @@ public class FileDisk implements IDisk {
 
 	@Override
 	public void format() {
-		try (FileWriter fileWriter = new FileWriter(new File("filedata.data"));) {
+		try (FileWriter fileWriter = new FileWriter("filedata.data");) {
 			fileWriter.write("");
 			fileWriter.flush();
 		} catch (Exception e) {
