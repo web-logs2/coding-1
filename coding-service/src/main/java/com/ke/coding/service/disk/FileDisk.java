@@ -7,6 +7,7 @@ import java.io.RandomAccessFile;
 import javax.annotation.PostConstruct;
 import jodd.io.FileUtil;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,12 +18,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class FileDisk implements IDisk {
 
+	@Value("${file.path:tempdata}")
+	private String filePath;
+
 	@SneakyThrows
 	@PostConstruct
 	void init() {
-		boolean existingFile = FileUtil.isExistingFile(new File("filedata.data"));
+		System.out.println("filePath is ： " + filePath);
+		boolean existingFile = FileUtil.isExistingFile(new File(filePath));
 		if (!existingFile) {
-			new File("filedata.data").createNewFile();
+			new File(filePath).createNewFile();
 		}
 	}
 
@@ -34,7 +39,7 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public byte[] readSector(int sectorIdx) {
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "r")) {
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")) {
 			byte[] result = new byte[sectorSize()];
 			randomAccessFile.seek((long) sectorIdx * sectorSize());
 			randomAccessFile.read(result, 0, sectorSize());
@@ -55,7 +60,7 @@ public class FileDisk implements IDisk {
 	@SneakyThrows
 	@Override
 	public byte[] readSector(int sectorIndex, int count) {
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "r")) {
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")) {
 			byte[] result = new byte[count * sectorSize()];
 			randomAccessFile.seek((long) sectorIndex * sectorSize());
 			randomAccessFile.read(result, 0, count * sectorSize());
@@ -74,7 +79,7 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public void writeSector(int sectorIdx, byte[] sectorData) {
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "rw")) {
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "rw")) {
 			randomAccessFile.seek((long) sectorIdx * sectorSize());
 			randomAccessFile.write(sectorData);
 		} catch (Exception e) {
@@ -91,7 +96,7 @@ public class FileDisk implements IDisk {
 	 */
 	@Override
 	public void appendWriteSector(int sectorIdx, byte[] sectorData, int beginIndex) {
-		try (RandomAccessFile randomAccessFile = new RandomAccessFile("filedata.data", "rw");) {
+		try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "rw")) {
 			randomAccessFile.seek((long) sectorIdx * sectorSize() + beginIndex);
 			randomAccessFile.write(sectorData);
 		} catch (Exception e) {
@@ -101,7 +106,7 @@ public class FileDisk implements IDisk {
 
 	@Override
 	public void format() {
-		try (FileWriter fileWriter = new FileWriter("filedata.data");) {
+		try (FileWriter fileWriter = new FileWriter(filePath)) {
 			fileWriter.write("");
 			fileWriter.flush();
 		} catch (Exception e) {

@@ -1,6 +1,10 @@
 coding
 =============================
+打包命令：
+mvn package -DskipTests
 
+启动命令：
+java -jar coding.jar --file.path=666
 #1、系统模块划分
 ##1.1 命令行交互模块
 基于picocli，整合springboot，快速构建一个java命令行程序。
@@ -13,7 +17,7 @@ coding
 ##1.3 FAT16X底层存储模块
 
 ###1.3.1 数据结构
-![img_2.png](img_2.png)![img_1.png](img_1.png)
+![img_2.png](img_2.png)![img_1.png](img_1.png)![img_3.png](img_3.png)
 ###1.3.1.1 Boot Sector
 占用空间：512 bytes，1个扇区
 

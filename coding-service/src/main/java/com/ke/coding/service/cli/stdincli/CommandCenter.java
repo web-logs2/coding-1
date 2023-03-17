@@ -1,4 +1,4 @@
-package com.ke.coding.service.cli.springshell;
+package com.ke.coding.service.cli.stdincli;
 
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
@@ -130,7 +130,7 @@ public class CommandCenter {
 
 	List<String> buildParams(String input){
 		List<String> result = new ArrayList<>();
-		if (input.contains("\"") | input.contains("'")){
+		if (input.contains("\"") || input.contains("'")){
 			String data = "";
 			Matcher m= p.matcher(input);
 			while(m.find())
