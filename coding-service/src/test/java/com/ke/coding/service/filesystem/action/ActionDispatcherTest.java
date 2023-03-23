@@ -1,4 +1,4 @@
-package com.ke.coding.service.filesystem.fat16xservice;
+package com.ke.coding.service.filesystem.action;
 
 
 import com.ke.coding.api.dto.cli.Command;
@@ -6,7 +6,7 @@ import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.filesystem.action.impl.MkdirAction;
-import com.ke.coding.service.filesystem.action.ActionDispatcher;
+import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataClusterService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataRegionService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.FatRegionService;
@@ -23,12 +23,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource("classpath:test.properties")
-@Import({MkdirAction.class, ActionDispatcher.class, FileDisk.class,  DataRegionService.class, DataClusterService.class,
-	FatRegionService.class, RootDirectoryRegionService.class})
+@Import({ActionDispatcher.class, FileDisk.class,  DataRegionService.class, DataClusterService.class,
+	FatRegionService.class, RootDirectoryRegionService.class, Fat16xSystemServiceImpl.class})
 public class ActionDispatcherTest {
 
 	@Autowired
 	ActionDispatcher fat16xFileSystemService;
+
+	@Autowired
+	MkdirAction mkdirAction;
+
 
 	@Test
 	public void mkdir() {

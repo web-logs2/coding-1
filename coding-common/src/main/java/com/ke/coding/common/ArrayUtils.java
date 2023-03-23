@@ -42,4 +42,19 @@ public class ArrayUtils {
 		}
 	}
 
+	public static boolean isEmpty(List<Byte> data) {
+		if (data == null) {
+			return true;
+		} else {
+			boolean empty = true;
+			for (byte datum : data) {
+				if (datum != 0) {
+					empty = false;
+					break;
+				}
+			}
+			return empty;
+		}
+	}
+
 }

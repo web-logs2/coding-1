@@ -40,7 +40,7 @@ public class TouchAction extends AbstractAction {
 		if (ROOT_PATH.equals(currentPath) && !hasIdleRootDirectorySpace(fat16xFileSystem)) {
 			return FileSystemActionResult.fail(INSUFFICIENT_SPACE);
 		}
-		DirectoryEntry newDirectoryEntry = DirectoryEntry.buildFile(fileName, fileNameExtension);
+		DirectoryEntry newDirectoryEntry = DirectoryEntry.buildFile(fileName);
 		//step: 根下创建文件，不需要存储目录cluster
 		//ex：/xyl.jpg
 		if (ROOT_PATH.equals(currentPath)) {

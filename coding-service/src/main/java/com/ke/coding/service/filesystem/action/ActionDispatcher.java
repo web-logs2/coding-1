@@ -1,22 +1,13 @@
 package com.ke.coding.service.filesystem.action;
 
-import static com.ke.coding.api.enums.Constants.BOOT_SECTOR_SIZE;
-import static com.ke.coding.api.enums.Constants.BOOT_SECTOR_START;
-import static com.ke.coding.api.enums.Constants.FAT_SIZE;
-import static com.ke.coding.api.enums.Constants.FAT_START;
-import static com.ke.coding.api.enums.Constants.ROOT_DIRECTORY_SIZE;
-import static com.ke.coding.api.enums.Constants.ROOT_DIRECTORY_START;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_NOT_FOUND;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
-import com.ke.coding.api.dto.filesystem.fat16x.bootregion.BootSector;
-import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.RootDirectoryRegion;
-import com.ke.coding.api.dto.filesystem.fat16x.fatregion.FatRegion;
 import com.ke.coding.api.enums.ActionTypeEnums;
-import com.ke.coding.service.disk.IDisk;
 import com.ke.coding.service.filesystem.fat16xservice.FileSystem;
+import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.BeansException;
@@ -40,7 +31,7 @@ public class ActionDispatcher implements FileSystem, ApplicationContextAware {
 	Fat16xFileSystem fat16xFileSystem;
 
 	@Autowired
-	IDisk iDisk;
+	Fat16xSystemServiceImpl fat16XSystemServiceImpl;
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -54,10 +45,7 @@ public class ActionDispatcher implements FileSystem, ApplicationContextAware {
 	 */
 	@PostConstruct
 	public void init() {
-		fat16xFileSystem = new Fat16xFileSystem();
-		fat16xFileSystem.setReservedRegion(new BootSector(iDisk.readSector(BOOT_SECTOR_START, BOOT_SECTOR_SIZE)));
-		fat16xFileSystem.setRootDirectoryRegion(new RootDirectoryRegion(iDisk.readSector(ROOT_DIRECTORY_START, ROOT_DIRECTORY_SIZE)));
-		fat16xFileSystem.setFatRegion(new FatRegion(iDisk.readSector(FAT_START, FAT_SIZE)));
+		fat16xFileSystem = fat16XSystemServiceImpl.getFat16xFileSystem();
 	}
 
 	@Override

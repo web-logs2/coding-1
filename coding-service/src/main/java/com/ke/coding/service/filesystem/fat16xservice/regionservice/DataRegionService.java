@@ -32,7 +32,7 @@ public class DataRegionService {
 	public void getClustersData(int[] index, byte[] results) {
 		for (int i = 0; i < index.length; i++) {
 			if (i != index.length - 1) {
-				byte[] clusterAllData = clusterService.getAllData(index[i]);
+				byte[] clusterAllData = clusterService.getClusterData(index[i]);
 				System.arraycopy(clusterAllData, 0, results, i * PER_SECTOR_BYTES * PER_CLUSTER_SECTOR, PER_SECTOR_BYTES * PER_CLUSTER_SECTOR);
 			} else {
 				int endClusterSize = i == 0 ? results.length : results.length % (i * PER_SECTOR_BYTES * PER_CLUSTER_SECTOR);

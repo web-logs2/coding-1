@@ -35,6 +35,14 @@ public class FatRegionService {
 		disk.writeSector(FAT_START + sectorIndex, bytes);
 	}
 
+	public void relink(int oldCluster, int newCluster, FatRegion fatRegion){
+		if (oldCluster != newCluster) {
+			//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
+			save(newCluster, FAT_NC_END_OF_FILE, fatRegion);
+			save(oldCluster, String.format("%04x", newCluster), fatRegion);
+		}
+	}
+
 	/**
 	 * 根据数据大小，分配一组Fat
 	 *

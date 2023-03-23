@@ -9,11 +9,10 @@ import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
 import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataSector;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
+import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataRegionService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.FatRegionService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.RootDirectoryRegionService;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -29,7 +28,8 @@ public abstract class AbstractAction implements Action {
 	public RootDirectoryRegionService rootDirectoryRegionService;
 	@Autowired
 	public FatRegionService fatRegionService;
-
+	@Autowired
+	public FileSystemService fileSystemService;
 
 	/**
 	 * 找到根目录条目
@@ -43,49 +43,13 @@ public abstract class AbstractAction implements Action {
 		String path = split[1];
 		DirectoryEntry directoryEntry = null;
 		for (int i = 0; i < fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries().length; i++) {
-			if (fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i] != null && fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i].getFileName().equals(path)) {
+			if (fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i] != null && fat16xFileSystem.getRootDirectoryRegion()
+				.getDirectoryEntries()[i].getFileName().equals(path)) {
 				directoryEntry = fat16xFileSystem.getRootDirectoryRegion().getDirectoryEntries()[i];
 				directoryEntry.setIndex(i);
 			}
 		}
 		return directoryEntry;
-	}
-
-	/**
-	 * 构建所有目录条目
-	 *
-	 * @param startingCluster  从集群
-	 * @param fat16xFileSystem fat16x文件系统
-	 * @return {@link List}<{@link DirectoryEntry}>
-	 */
-	public List<DirectoryEntry> buildAllDirectoryEntry(int startingCluster, Fat16xFileSystem fat16xFileSystem) {
-		if (startingCluster == 0) {
-			return new ArrayList<>();
-		}
-		List<DirectoryEntry> directoryEntries = new ArrayList<>();
-		//找到对应的全部目录data cluster
-		int[] dataIndex = fat16xFileSystem.getFatRegion().allOfFileClusterIndex(startingCluster);
-		DataCluster[] dataClusters = dataRegionService.findClusters(dataIndex);
-		//遍历所有目录集群信息
-		for (DataCluster cluster : dataClusters) {
-			if (cluster != null) {
-				//遍历所有扇区
-				for (DataSector sector : cluster.getSectors()) {
-					if (sector != null) {
-						//找到当前扇区的末尾
-						int freeSpaceIndex = sector.freeSpaceIndexForDir(DIRECTORY_ENTRY_SIZE);
-						int begin = 0;
-						while (begin < freeSpaceIndex) {
-							DirectoryEntry directoryEntry = new DirectoryEntry();
-							System.arraycopy(sector.getData(), begin, directoryEntry.getData(), 0, DIRECTORY_ENTRY_SIZE);
-							directoryEntries.add(directoryEntry);
-							begin += DIRECTORY_ENTRY_SIZE;
-						}
-					}
-				}
-			}
-		}
-		return directoryEntries;
 	}
 
 	/**
@@ -154,11 +118,12 @@ public abstract class AbstractAction implements Action {
 											int endOfFileCluster = fat16xFileSystem.getFatRegion().endOfFileCluster(beginCluster);
 											//保存目录信息至数据区域数据
 											int newEndOfFileCluster = dataRegionService.saveDir(newDirectoryEntry.getData(), endOfFileCluster,
-													fat16xFileSystem);
+												fat16xFileSystem);
 											if (endOfFileCluster != newEndOfFileCluster) {
 												//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
 												fatRegionService.save(newEndOfFileCluster, FAT_NC_END_OF_FILE, fat16xFileSystem.getFatRegion());
-												fatRegionService.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster), fat16xFileSystem.getFatRegion());
+												fatRegionService.save(endOfFileCluster, String.format("%04x", newEndOfFileCluster),
+													fat16xFileSystem.getFatRegion());
 											}
 										}
 									}

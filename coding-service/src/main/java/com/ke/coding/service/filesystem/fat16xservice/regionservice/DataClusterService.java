@@ -27,7 +27,7 @@ public class DataClusterService {
 	 *
 	 * @return {@link byte[]}
 	 */
-	public byte[] getAllData(int clusterIndex) {
+	public byte[] getClusterData(int clusterIndex) {
 		return disk.readSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR,  PER_CLUSTER_SECTOR);
 	}
 
@@ -40,7 +40,7 @@ public class DataClusterService {
 	 */
 	public byte[] getDataBySize(int clusterIndex, int size) {
 		byte[] result = new byte[size];
-		byte[] allData = getAllData(clusterIndex);
+		byte[] allData = getClusterData(clusterIndex);
 		System.arraycopy(allData, 0, result, 0, size);
 		return result;
 	}
@@ -52,7 +52,7 @@ public class DataClusterService {
 	 * @return boolean
 	 */
 	public boolean appendSaveDir(int clusterIndex, byte[] data) {
-		byte[] allData = getAllData(clusterIndex);
+		byte[] allData = getClusterData(clusterIndex);
 		byte[] temp = new byte[DIRECTORY_ENTRY_SIZE];
 		System.arraycopy(allData, allData.length - DIRECTORY_ENTRY_SIZE, temp, 0, DIRECTORY_ENTRY_SIZE);
 		//末尾的空间不为空，则说明该cluster空间已满
@@ -120,7 +120,7 @@ public class DataClusterService {
 	public DataCluster[] findClusters(int[] index) {
 		DataCluster[] result = new DataCluster[index.length];
 		for (int i = 0; i < index.length; i++) {
-			byte[] allData = getAllData(index[i]);
+			byte[] allData = getClusterData(index[i]);
 			DataCluster dataCluster = new DataCluster();
 			dataCluster.save(allData);
 			dataCluster.setIndex(index[i]);

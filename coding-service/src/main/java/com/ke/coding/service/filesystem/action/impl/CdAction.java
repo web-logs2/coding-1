@@ -29,7 +29,7 @@ public class CdAction extends AbstractAction {
 	public FileSystemActionResult run(Command command, Fat16xFileSystem fat16xFileSystem) {
 		String currentPath = command.getCurrentPath();
 		String cdPath = command.getParams().get(0);
-		if (cdPath.equals("..")) {
+		if ("..".equals(cdPath)) {
 			if (currentPath.equals(ROOT_PATH)) {
 				return FileSystemActionResult.success(ROOT_PATH);
 			} else {
