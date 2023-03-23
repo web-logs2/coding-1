@@ -1,4 +1,4 @@
-package com.ke.coding.service.filesystem.fat16xservice.filesystemservice;
+package com.ke.coding.service.filesystem.action;
 
 import static com.ke.coding.api.enums.Constants.BOOT_SECTOR_SIZE;
 import static com.ke.coding.api.enums.Constants.BOOT_SECTOR_START;
@@ -16,7 +16,6 @@ import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.RootDirectoryRegi
 import com.ke.coding.api.dto.filesystem.fat16x.fatregion.FatRegion;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.disk.IDisk;
-import com.ke.coding.service.filesystem.action.Action;
 import com.ke.coding.service.filesystem.fat16xservice.FileSystem;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
@@ -32,7 +31,7 @@ import org.springframework.stereotype.Service;
  * @description:
  */
 @Service
-public class Fat16xFileSystemService implements FileSystem, ApplicationContextAware {
+public class ActionDispatcher implements FileSystem, ApplicationContextAware {
 
 	@Getter
 	private static ApplicationContext applicationContext;
@@ -45,8 +44,8 @@ public class Fat16xFileSystemService implements FileSystem, ApplicationContextAw
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		if (Fat16xFileSystemService.applicationContext == null) {
-			Fat16xFileSystemService.applicationContext = applicationContext;
+		if (ActionDispatcher.applicationContext == null) {
+			ActionDispatcher.applicationContext = applicationContext;
 		}
 	}
 

@@ -4,7 +4,7 @@ package com.ke.coding.service.filesystem.action.impl;
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
 import com.ke.coding.service.disk.FileDisk;
-import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xFileSystemService;
+import com.ke.coding.service.filesystem.action.ActionDispatcher;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataClusterService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataRegionService;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.FatRegionService;
@@ -19,7 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @TestPropertySource("classpath:test.properties")
-@Import({MkdirAction.class, Fat16xFileSystemService.class, FileDisk.class,  DataRegionService.class, DataClusterService.class,
+@Import({MkdirAction.class, ActionDispatcher.class, FileDisk.class,  DataRegionService.class, DataClusterService.class,
 	FatRegionService.class, RootDirectoryRegionService.class})
 public class MkdirActionTest {
 
@@ -27,7 +27,7 @@ public class MkdirActionTest {
 	MkdirAction mkdirAction;
 
 	@Autowired
-	Fat16xFileSystemService fat16xFileSystemService;
+	ActionDispatcher fat16xFileSystemService;
 
 	@Test
 	public void mkdir(){
