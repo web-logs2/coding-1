@@ -1,6 +1,5 @@
 package com.ke.coding.service.filesystem.fat16xservice.regionservice;
 
-import static com.ke.coding.api.enums.Constants.DIRECTORY_ENTRY_SIZE;
 import static com.ke.coding.api.enums.Constants.FAT_ENTRY_SIZE;
 import static com.ke.coding.api.enums.Constants.FAT_NC_END_OF_FILE;
 import static com.ke.coding.api.enums.Constants.FAT_START;

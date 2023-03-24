@@ -18,15 +18,12 @@ import org.springframework.stereotype.Service;
 public class FormatAction extends AbstractAction {
 
 	@Autowired
-	ActionDispatcher fileSystem;
-
-	@Autowired
 	IDisk iDisk;
 
 	@Override
 	public FileSystemActionResult run(Command command, Fat16xFileSystem fat16xFileSystem) {
 		iDisk.format();
-		fileSystem.init();
+		fileSystemService.init();
 		return FileSystemActionResult.success("format success");
 	}
 }

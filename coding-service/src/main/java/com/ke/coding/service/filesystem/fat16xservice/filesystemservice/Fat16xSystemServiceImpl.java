@@ -2,7 +2,9 @@ package com.ke.coding.service.filesystem.fat16xservice.filesystemservice;
 
 import static com.ke.coding.api.enums.Constants.BOOT_SECTOR_SIZE;
 import static com.ke.coding.api.enums.Constants.BOOT_SECTOR_START;
+import static com.ke.coding.api.enums.Constants.DATA_REGION_START;
 import static com.ke.coding.api.enums.Constants.DIRECTORY_ENTRY_SIZE;
+import static com.ke.coding.api.enums.Constants.FAT_NC_END_OF_FILE;
 import static com.ke.coding.api.enums.Constants.FAT_SIZE;
 import static com.ke.coding.api.enums.Constants.FAT_START;
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
@@ -63,6 +65,7 @@ public class Fat16xSystemServiceImpl implements FileSystemService {
 	/**
 	 * 初始化文件系统
 	 */
+	@Override
 	@PostConstruct
 	public void init() {
 		fat16xFileSystem = new Fat16xFileSystem();
@@ -126,24 +129,25 @@ public class Fat16xSystemServiceImpl implements FileSystemService {
 	@Override
 	public FileSystemActionResult saveDir(String currentPath, String fileName) {
 		DirectoryEntry newDirectoryEntry = DirectoryEntry.buildDir(fileName);
-		//RootDirectoryRegion保存
 		if (ROOT_PATH.equals(currentPath)) {
 			rootDirectoryRegionService.save(fat16xFileSystem.getRootDirectoryRegion(), fat16xFileSystem.getRootDirectoryRegion().freeIndex(),
 				newDirectoryEntry);
 		} else {
 			//数据区域数据保存
 			DirectoryEntry directoryEntry = findDirectoryEntry(currentPath);
-			initDirectoryEntry(directoryEntry);
+			initDirectoryEntry(directoryEntry, fat16xFileSystem.getFatRegion());
 			int newEndOfFileCluster = dataRegionService.saveDir(newDirectoryEntry.getData(), directoryEntry.getStartingCluster(), fat16xFileSystem);
 			fatRegionService.relink(directoryEntry.getStartingCluster(), newEndOfFileCluster, fat16xFileSystem.getFatRegion());
 		}
 		return FileSystemActionResult.success();
 	}
 
-	void initDirectoryEntry(DirectoryEntry directoryEntry) {
+	void initDirectoryEntry(DirectoryEntry directoryEntry, FatRegion fatRegion) {
 		if (directoryEntry.getStartingCluster() == 0) {
 			int firstFreeFat = fat16xFileSystem.getFatRegion().firstFreeFat();
 			directoryEntry.setStartingCluster(firstFreeFat);
+			iDisk.writeSector(DATA_REGION_START + firstFreeFat, directoryEntry.getData());
+			fatRegionService.save(firstFreeFat, FAT_NC_END_OF_FILE, fatRegion);
 		}
 	}
 

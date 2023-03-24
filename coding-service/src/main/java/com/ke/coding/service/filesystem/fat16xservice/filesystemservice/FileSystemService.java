@@ -10,6 +10,7 @@ import java.util.List;
  * @description:
  */
 public interface FileSystemService {
+
 	DirectoryEntry findDirectoryEntry(String filePath);
 
 	FileSystemActionResult readFile(DirectoryEntry directoryEntry);
@@ -17,4 +18,6 @@ public interface FileSystemService {
 	List<DirectoryEntry> getAllDirectoryEntry(int startingCluster);
 
 	FileSystemActionResult saveDir(String currentPath, String fileName);
+
+	void init();
 }
