@@ -1,6 +1,6 @@
 package com.ke.coding.service.filesystem.fat16xservice.filesystemservice;
 
-import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
+import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import java.util.List;
 
@@ -13,11 +13,13 @@ public interface FileSystemService {
 
 	DirectoryEntry findDirectoryEntry(String filePath);
 
-	FileSystemActionResult readFile(DirectoryEntry directoryEntry);
+	FileSystemResult readFile(DirectoryEntry directoryEntry);
 
-	List<DirectoryEntry> getAllDirectoryEntry(int startingCluster);
+	FileSystemResult writeFile(DirectoryEntry directoryEntry, byte[] data);
 
-	FileSystemActionResult saveDir(String currentPath, String fileName);
+	List<DirectoryEntry> getAllDirectoryEntry(DirectoryEntry directoryEntry);
+
+	DirectoryEntry saveDir(String currentPath, String fileName, boolean dir);
 
 	void init();
 }

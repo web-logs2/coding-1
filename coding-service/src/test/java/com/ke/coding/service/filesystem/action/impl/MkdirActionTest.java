@@ -2,7 +2,7 @@ package com.ke.coding.service.filesystem.action.impl;
 
 
 import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
+import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.filesystem.action.ActionDispatcher;
 import com.ke.coding.service.filesystem.fat16xservice.regionservice.DataClusterService;
@@ -34,12 +34,12 @@ public class MkdirActionTest {
 		Command command = new Command();
 		command.setParams(Collections.singletonList("1"));
 		command.setCurrentPath("/");
-		FileSystemActionResult run = mkdirAction.run(command, fat16xFileSystemService.getFat16xFileSystem());
+		FileSystemResult run = mkdirAction.run(command);
 		System.out.println(run.getData());
 
 		command.setParams(Collections.singletonList("11"));
 		command.setCurrentPath("/1");
-		run = mkdirAction.run(command, fat16xFileSystemService.getFat16xFileSystem());
+		run = mkdirAction.run(command);
 		System.out.println(run.getData());
 	}
 

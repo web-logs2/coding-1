@@ -1,7 +1,7 @@
 package com.ke.coding.service.filesystem.fat16xservice;
 
 import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
+import com.ke.coding.api.dto.filesystem.FileSystemResult;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -14,9 +14,9 @@ public interface FileSystem {
 	 * 执行
 	 *
 	 * @param command 命令
-	 * @return {@link FileSystemActionResult}
+	 * @return {@link FileSystemResult}
 	 */
-	default FileSystemActionResult execute(Command command) {
+	default FileSystemResult execute(Command command) {
 		return null;
 	}
 
@@ -24,9 +24,9 @@ public interface FileSystem {
 	 * mkdir
 	 *
 	 * @param command 命令
-	 * @return {@link FileSystemActionResult}
+	 * @return {@link FileSystemResult}
 	 */
-	default FileSystemActionResult mkdir(Command command) {
+	default FileSystemResult mkdir(Command command) {
 		return null;
 	}
 
@@ -35,9 +35,9 @@ public interface FileSystem {
 	 * touch
 	 *
 	 * @param command 命令
-	 * @return {@link FileSystemActionResult}
+	 * @return {@link FileSystemResult}
 	 */
-	default FileSystemActionResult touch(Command command) {
+	default FileSystemResult touch(Command command) {
 		return null;
 	}
 
@@ -45,9 +45,9 @@ public interface FileSystem {
 	 * ls
 	 *
 	 * @param command 命令
-	 * @return {@link FileSystemActionResult}
+	 * @return {@link FileSystemResult}
 	 */
-	default FileSystemActionResult ls(Command command) {
+	default FileSystemResult ls(Command command) {
 		return null;
 	}
 
@@ -55,9 +55,9 @@ public interface FileSystem {
 	 * echo
 	 *
 	 * @param command 命令
-	 * @return {@link FileSystemActionResult}
+	 * @return {@link FileSystemResult}
 	 */
-	default FileSystemActionResult echo(Command command) {
+	default FileSystemResult echo(Command command) {
 		return null;
 	}
 
@@ -65,13 +65,13 @@ public interface FileSystem {
 	 * cat
 	 *
 	 * @param command 命令
-	 * @return {@link FileSystemActionResult}
+	 * @return {@link FileSystemResult}
 	 */
-	default FileSystemActionResult cat(Command command) {
+	default FileSystemResult cat(Command command) {
 		return null;
 	}
 
-	default FileSystemActionResult format(Command command) {
+	default FileSystemResult format(Command command) {
 		return null;
 	}
 }

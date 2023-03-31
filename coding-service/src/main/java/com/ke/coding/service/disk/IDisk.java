@@ -39,7 +39,6 @@ public interface IDisk {
 	 */
 	void appendWriteSector(int sectorIdx, byte[] sectorData, int beginIndex);
 
-
 	/**
 	 * 磁盘每个扇区的大小，固定为512字节
 	 */

@@ -5,7 +5,7 @@ import static com.ke.coding.api.enums.Constants.DIRECTORY_ENTRY_SIZE;
 import static com.ke.coding.api.enums.Constants.PER_CLUSTER_SECTOR;
 import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
 
-import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
+import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import com.ke.coding.common.ArrayUtils;
 import com.ke.coding.service.disk.IDisk;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class DataClusterService {
 	 * @return {@link byte[]}
 	 */
 	public byte[] getClusterData(int clusterIndex) {
-		return disk.readSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR,  PER_CLUSTER_SECTOR);
+		return disk.readSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR, PER_CLUSTER_SECTOR);
 	}
 
 	/**
@@ -48,10 +48,11 @@ public class DataClusterService {
 	/**
 	 * 追加保存，在文件尾追加数据
 	 *
-	 * @param data 数据
+	 * @param clusterIndex   集群指数
+	 * @param directoryEntry 目录条目
 	 * @return boolean
 	 */
-	public boolean appendSaveDir(int clusterIndex, byte[] data) {
+	public boolean appendSaveDir(int clusterIndex, DirectoryEntry directoryEntry) {
 		byte[] allData = getClusterData(clusterIndex);
 		byte[] temp = new byte[DIRECTORY_ENTRY_SIZE];
 		System.arraycopy(allData, allData.length - DIRECTORY_ENTRY_SIZE, temp, 0, DIRECTORY_ENTRY_SIZE);
@@ -62,8 +63,10 @@ public class DataClusterService {
 			for (int i = 0; i < (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR / DIRECTORY_ENTRY_SIZE); i++) {
 				System.arraycopy(allData, i * DIRECTORY_ENTRY_SIZE, temp, 0, DIRECTORY_ENTRY_SIZE);
 				if (ArrayUtils.isEmpty(temp)) {
-					System.arraycopy(data, 0, allData, i * DIRECTORY_ENTRY_SIZE, DIRECTORY_ENTRY_SIZE);
+					System.arraycopy(directoryEntry.getData(), 0, allData, i * DIRECTORY_ENTRY_SIZE, DIRECTORY_ENTRY_SIZE);
 					disk.writeSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR, allData);
+					directoryEntry.setIndex(i);
+					directoryEntry.setAtCluster(clusterIndex);
 					return true;
 				}
 			}
@@ -89,15 +92,16 @@ public class DataClusterService {
 	 */
 	public void appendSaveFile(int clusterIndex, byte[] data, int oldFileSize) {
 		//最后一个sector使用的空间
-		int lastSectorUsedSpace = oldFileSize % PER_SECTOR_BYTES;
+		int lastSectorUsedSpace = oldFileSize == 0 ? 0 : (oldFileSize % PER_SECTOR_BYTES == 0 ? PER_SECTOR_BYTES : oldFileSize % PER_SECTOR_BYTES);
 		//最后一个sector剩余的空间
 		int lastSectorRemainSpace = PER_SECTOR_BYTES - lastSectorUsedSpace;
 		//最后一个集群，已使用的容量
-		int lastClusterUsedSize = oldFileSize % (PER_CLUSTER_SECTOR * PER_CLUSTER_SECTOR);
+		int lastClusterUsedSize = oldFileSize == 0 ? 0 : (oldFileSize % (PER_CLUSTER_SECTOR * PER_CLUSTER_SECTOR) == 0 ?
+			PER_CLUSTER_SECTOR * PER_CLUSTER_SECTOR : oldFileSize % (PER_CLUSTER_SECTOR * PER_CLUSTER_SECTOR));
 		//最后一个集群，占用的sector数量
 		int lastClusterUsedSectorSize = lastClusterUsedSize / PER_SECTOR_BYTES;
 		//补齐第一个sector
-		if (lastSectorUsedSpace > 0) {
+		if (lastSectorRemainSpace > 0) {
 			//第一个sector剩余的空间，可以存储保存的数据
 			if (lastSectorRemainSpace > data.length) {
 				disk.appendWriteSector(DATA_REGION_START + clusterIndex * PER_CLUSTER_SECTOR + lastClusterUsedSectorSize, data, lastSectorUsedSpace);
@@ -117,15 +121,4 @@ public class DataClusterService {
 		}
 	}
 
-	public DataCluster[] findClusters(int[] index) {
-		DataCluster[] result = new DataCluster[index.length];
-		for (int i = 0; i < index.length; i++) {
-			byte[] allData = getClusterData(index[i]);
-			DataCluster dataCluster = new DataCluster();
-			dataCluster.save(allData);
-			dataCluster.setIndex(index[i]);
-			result[i] = dataCluster;
-		}
-		return result;
-	}
 }

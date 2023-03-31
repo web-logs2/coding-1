@@ -6,7 +6,7 @@ import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_NOT_FOUND;
 
 import com.google.common.base.Joiner;
 import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
+import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntrySubInfo;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.filesystem.fat16xservice.FileSystem;
@@ -64,11 +64,11 @@ public class CommandCenter {
 					return ACTION_ERROR.message();
 				}
 				command.setParams(Collections.singletonList(s[1]));
-				FileSystemActionResult fileSystemActionResult = fileSystem.execute(command);
-				if (fileSystemActionResult.isSuccess()){
-					currentPath = fileSystemActionResult.getData();
+				FileSystemResult fileSystemResult = fileSystem.execute(command);
+				if (fileSystemResult.isSuccess()){
+					currentPath = fileSystemResult.getData();
 				}
-				result = fileSystemActionResult.getData();
+				result = fileSystemResult.getData();
 				break;
 			case ECHO:
 				result = echo(command);
@@ -99,7 +99,7 @@ public class CommandCenter {
 
 
 	public String ll() {
-		FileSystemActionResult result = fileSystem.execute(Command.build("ll", currentPath));
+		FileSystemResult result = fileSystem.execute(Command.build("ll", currentPath));
 		List<DirectoryEntrySubInfo> directoryEntrySubInfos = JsonUtils.parseStr2List(result.getData(), DirectoryEntrySubInfo.class);
 		List<String> lines = new ArrayList<>();
 		for (DirectoryEntrySubInfo directoryEntrySubInfo : directoryEntrySubInfos) {
@@ -112,8 +112,8 @@ public class CommandCenter {
 	}
 
 	public String format() {
-		FileSystemActionResult format = fileSystem.execute(Command.build("format", currentPath));
-		FileSystemActionResult cd = fileSystem.execute(Command.build("cd", currentPath, Collections.singletonList(ROOT_PATH)));
+		FileSystemResult format = fileSystem.execute(Command.build("format", currentPath));
+		FileSystemResult cd = fileSystem.execute(Command.build("cd", currentPath, Collections.singletonList(ROOT_PATH)));
 		currentPath = cd.getData();
 		return format.getData();
 	}

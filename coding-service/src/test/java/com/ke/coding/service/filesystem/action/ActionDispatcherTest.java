@@ -2,7 +2,7 @@ package com.ke.coding.service.filesystem.action;
 
 
 import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemActionResult;
+import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.filesystem.action.impl.MkdirAction;
@@ -84,7 +84,7 @@ public class ActionDispatcherTest {
 		touch();
 		Command command = new Command();
 		command.setCurrentPath("/");
-		FileSystemActionResult ls = fat16xFileSystemService.ls(command);
+		FileSystemResult ls = fat16xFileSystemService.ls(command);
 		Assert.assertEquals("[\"/test\"]", ls.getData());
 
 		command.setCurrentPath("/test");
@@ -155,7 +155,7 @@ public class ActionDispatcherTest {
 		command.setCurrentPath("/");
 		command.setParams(Collections.singletonList("xyl.dat"));
 		//首次写入/xyl.dat
-		FileSystemActionResult cat = fat16xFileSystemService.cat(command);
+		FileSystemResult cat = fat16xFileSystemService.cat(command);
 		Assert.assertEquals("this is data", cat.getData());
 
 		command.setParams(Arrays.asList("this is data1", "xyl.dat"));

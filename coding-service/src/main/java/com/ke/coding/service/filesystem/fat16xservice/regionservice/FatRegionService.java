@@ -24,7 +24,7 @@ public class FatRegionService {
 	@Autowired
 	IDisk disk;
 
-	public void save(int index, String ncStatus, FatRegion fatRegion) {
+		public void save(int index, String ncStatus, FatRegion fatRegion) {
 		fatRegion.getFats()[index] = fatRegion.getFats()[index] == null ? new Fat() : fatRegion.getFats()[index];
 		fatRegion.getFats()[index].save(HexByteUtil.hexToByteArray(ncStatus));
 		int sectorIndex = (index * FAT_ENTRY_SIZE) / disk.sectorSize();
@@ -48,7 +48,7 @@ public class FatRegionService {
 	 * @param fileSize 文件大小
 	 * @return {@link int[]}
 	 */
-	public int[] freeFatArray(long fileSize, FatRegion fatRegion) {
+	public int[] allocateFatArray(long fileSize, FatRegion fatRegion) {
 		int needCount = (int) (fileSize / (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR) + (fileSize % (PER_SECTOR_BYTES * PER_CLUSTER_SECTOR) > 0 ? 1 : 0));
 		int[] result = new int[needCount];
 		//找空间

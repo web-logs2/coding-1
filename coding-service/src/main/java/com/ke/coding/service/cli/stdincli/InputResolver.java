@@ -36,6 +36,7 @@ public class InputResolver {
 					System.out.println(result);
 					System.out.print("root@xyl-shell:" + commandCenter.getCurrentPath() + "$");
 				} catch (Exception e) {
+					e.printStackTrace();
 					System.out.println(ErrorCodeEnum.ACTION_ERROR.message());
 					System.out.print("root@xyl-shell:" + commandCenter.getCurrentPath() + "$");
 				}

@@ -7,7 +7,7 @@ import static com.ke.coding.common.ArrayUtils.list2Ary;
 
 import com.google.common.collect.Lists;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
-import com.ke.coding.api.dto.filesystem.fat16x.dataregion.DataCluster;
+import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,23 +46,20 @@ public class DataRegionService {
 	/**
 	 * 从集群尾保存数据，并返回所有的集群id； 如果文件的存储，应该直接从cluster头部存 目录存储: 当前cluster空间不满足时，最多跨一个cluster
 	 *
-	 * @param data        数据
-	 * @param fileCluster 集群文件结束
-	 * @return {@link int[]}
+	 * @param fileCluster      集群文件结束
+	 * @param directoryEntry   目录条目
+	 * @param fat16xFileSystem fat16x文件系统
+	 * @return int
 	 */
-	public int saveDir(byte[] data, int fileCluster, Fat16xFileSystem fat16xFileSystem) {
+	public int saveDir(DirectoryEntry directoryEntry, int fileCluster, Fat16xFileSystem fat16xFileSystem) {
 		//先看一下当前节点的剩余空间是否满足
-		if (clusterService.appendSaveDir(fileCluster, data)) {
+		if (clusterService.appendSaveDir(fileCluster, directoryEntry)) {
 			return fileCluster;
 		} else {
 			int firstFreeFat = fat16xFileSystem.getFatRegion().firstFreeFat();
-			clusterService.appendSaveDir(firstFreeFat, data);
+			clusterService.appendSaveDir(firstFreeFat, directoryEntry);
 			return firstFreeFat;
 		}
-	}
-
-	public void updateDirInfo(DataCluster dataCluster) {
-		clusterService.save(dataCluster.getIndex(), dataCluster.getAllData());
 	}
 
 	/**
@@ -88,10 +85,6 @@ public class DataRegionService {
 	 */
 	public void appendSaveFile(byte[] data, int dataClusterIndex, int oldFileSize) {
 		clusterService.appendSaveFile(dataClusterIndex, data, oldFileSize);
-	}
-
-	public DataCluster[] findClusters(int[] index) {
-		return clusterService.findClusters(index);
 	}
 
 
