@@ -30,7 +30,7 @@ public class TouchAction extends AbstractAction {
 			return FileSystemResult.fail(FILENAME_LENGTH_TOO_LONG);
 		}
 		String currentPath = command.getCurrentPath();
-		fileSystemService.saveDir(currentPath, wholeFileName, false);
+		fileSystemService.mkdir(currentPath, wholeFileName, false);
 		return FileSystemResult.success();
 	}
 }

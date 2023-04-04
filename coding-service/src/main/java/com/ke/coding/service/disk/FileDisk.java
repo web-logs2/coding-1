@@ -4,27 +4,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import javax.annotation.PostConstruct;
 import jodd.io.FileUtil;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
  * @time: 2023/3/9 18:33
  * @description:
  */
-@Service
 public class FileDisk implements IDisk {
 
-	@Value("${file.path:tempdata}")
 	private String filePath;
 
 	@SneakyThrows
-	@PostConstruct
-	void init() {
-		System.out.println("filePath is ： " + filePath);
+	public FileDisk() {
+		filePath = System.getProperty("filePath");
 		boolean existingFile = FileUtil.isExistingFile(new File(filePath));
 		if (!existingFile) {
 			new File(filePath).createNewFile();

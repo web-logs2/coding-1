@@ -2,9 +2,9 @@ package com.ke.coding.service.filesystem.action.impl;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
+import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
 import com.ke.coding.service.filesystem.action.AbstractAction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,8 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FormatAction extends AbstractAction {
 
-	@Autowired
-	IDisk iDisk;
+	IDisk iDisk = new FileDisk();
 
 	@Override
 	public FileSystemResult run(Command command) {

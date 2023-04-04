@@ -4,6 +4,7 @@ import static com.ke.coding.api.enums.ErrorCodeEnum.DIR_LENGTH_TOO_LONG;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
+import com.ke.coding.api.exception.CodingException;
 import com.ke.coding.service.filesystem.action.AbstractAction;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +23,13 @@ public class MkdirAction extends AbstractAction {
 		if (newDir.length() > 8) {
 			return FileSystemResult.fail(DIR_LENGTH_TOO_LONG);
 		}
-		//step: 当前路径是根目录，需要判断根目录区域空间是否充足
 		String currentPath = command.getCurrentPath();
-		fileSystemService.saveDir(currentPath, newDir, true);
+		try{
+			fileSystemService.mkdir(currentPath, newDir, true);
+		}catch (CodingException e){
+			return FileSystemResult.fail(e.getErrorCode());
+		}
+
 		return FileSystemResult.success();
 	}
 }

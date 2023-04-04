@@ -7,8 +7,8 @@ import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
 
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import com.ke.coding.common.ArrayUtils;
+import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,8 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataClusterService {
 
-	@Autowired
-	IDisk disk;
+	IDisk disk = new FileDisk();
 
 	/**
 	 * 得到所有数据

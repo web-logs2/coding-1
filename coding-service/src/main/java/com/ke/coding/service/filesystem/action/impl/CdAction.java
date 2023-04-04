@@ -5,12 +5,10 @@ import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY;
 
 import com.ke.coding.api.dto.cli.Command;
+import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
-import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntrySubInfo;
+import com.ke.coding.api.exception.CodingException;
 import com.ke.coding.service.filesystem.action.AbstractAction;
-import com.ke.risk.safety.common.util.json.JsonUtils;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,38 +19,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class CdAction extends AbstractAction {
 
-	@Autowired
-	LlAction llAction;
-
 	@Override
 	public FileSystemResult run(Command command) {
 		String currentPath = command.getCurrentPath();
 		String cdPath = command.getParams().get(0);
-		if ("..".equals(cdPath)) {
-			if (currentPath.equals(ROOT_PATH)) {
-				return FileSystemResult.success(ROOT_PATH);
-			} else {
-				String result = "";
-				String[] split = command.getCurrentPath().split(PATH_SPLIT);
-				for (int i = 0; i < split.length - 1; i++) {
-					result = ROOT_PATH + split[i];
-				}
-				return FileSystemResult.success(result);
+		if (cdPath.contains("..")) {
+			String[] cdPathSplit = cdPath.split(PATH_SPLIT);
+			String[] currentPathSplit = currentPath.split(PATH_SPLIT);
+
+			String result = "";
+			for (int i = 0; i < currentPathSplit.length - cdPathSplit.length; i++) {
+				result = ROOT_PATH + currentPathSplit[i];
 			}
+			return FileSystemResult.success(result);
+
 		} else if (cdPath.equals(ROOT_PATH)) {
 			return FileSystemResult.success(ROOT_PATH);
 		} else {
-			FileSystemResult result = llAction.run(Command.build(currentPath));
-			String data = result.getData();
-			List<DirectoryEntrySubInfo> directoryEntrySubInfos = JsonUtils.parseStr2List(data, DirectoryEntrySubInfo.class);
-			cdPath = cdPath.contains("/") ? cdPath : ROOT_PATH + cdPath;
-			for (DirectoryEntrySubInfo directoryEntrySubInfo : directoryEntrySubInfos) {
-				if (directoryEntrySubInfo.getFileName().contains(cdPath)) {
-					return FileSystemResult.success(currentPath.equals(ROOT_PATH) ? cdPath : currentPath + cdPath);
-				}
+			if (!cdPath.startsWith(PATH_SPLIT)) {
+				cdPath = currentPath.equals(ROOT_PATH) ? currentPath + cdPath : currentPath + PATH_SPLIT + cdPath;
 			}
-			return FileSystemResult.fail(NO_SUCH_FILE_OR_DIRECTORY);
-
+			Fd open = fileSystemService.open(cdPath);
+			if (open.isEmpty()) {
+				throw new CodingException(NO_SUCH_FILE_OR_DIRECTORY);
+			}
+			return FileSystemResult.success(cdPath);
 		}
 	}
 }

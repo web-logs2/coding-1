@@ -9,8 +9,8 @@ import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
 import com.ke.coding.api.dto.filesystem.fat16x.fatregion.Fat;
 import com.ke.coding.api.dto.filesystem.fat16x.fatregion.FatRegion;
 import com.ke.coding.common.HexByteUtil;
+import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,10 +21,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class FatRegionService {
 
-	@Autowired
-	IDisk disk;
+	IDisk disk = new FileDisk();
 
-		public void save(int index, String ncStatus, FatRegion fatRegion) {
+	public void save(int index, String ncStatus, FatRegion fatRegion) {
 		fatRegion.getFats()[index] = fatRegion.getFats()[index] == null ? new Fat() : fatRegion.getFats()[index];
 		fatRegion.getFats()[index].save(HexByteUtil.hexToByteArray(ncStatus));
 		int sectorIndex = (index * FAT_ENTRY_SIZE) / disk.sectorSize();
@@ -34,7 +33,7 @@ public class FatRegionService {
 		disk.writeSector(FAT_START + sectorIndex, bytes);
 	}
 
-	public void relink(int oldCluster, int newCluster, FatRegion fatRegion){
+	public void relink(int oldCluster, int newCluster, FatRegion fatRegion) {
 		if (oldCluster != newCluster) {
 			//保存fat区数据,新cluster置为尾部，老cluster指向新的cluster
 			save(newCluster, FAT_NC_END_OF_FILE, fatRegion);

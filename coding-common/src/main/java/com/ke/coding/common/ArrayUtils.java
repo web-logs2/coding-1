@@ -16,7 +16,6 @@ public class ArrayUtils {
 			bytes.add(datum);
 		}
 		return bytes;
-
 	}
 
 	public static byte[] list2Ary(List<Byte> bytes) {

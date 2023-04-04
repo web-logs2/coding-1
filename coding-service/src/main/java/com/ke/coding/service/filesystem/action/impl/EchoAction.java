@@ -5,8 +5,8 @@ import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.FILENAME_LENGTH_TOO_LONG;
 
 import com.ke.coding.api.dto.cli.Command;
+import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
-import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import com.ke.coding.service.filesystem.action.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Service;
@@ -34,11 +34,11 @@ public class EchoAction extends AbstractAction {
 			return FileSystemResult.fail(FILENAME_LENGTH_TOO_LONG);
 		}
 		String pathAndFile = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		DirectoryEntry directoryEntry = fileSystemService.findDirectoryEntry(pathAndFile);
-		if (directoryEntry == null) {
-			directoryEntry = fileSystemService.saveDir(currentPath, wholeFileName, false);
+		Fd open = fileSystemService.open(pathAndFile);
+		if (open.isEmpty()) {
+			fileSystemService.mkdir(currentPath, wholeFileName, false);
 		}
-		fileSystemService.writeFile(directoryEntry, command.getParams().get(0).getBytes(StandardCharsets.UTF_8));
+		fileSystemService.writeFile(open, command.getParams().get(0).getBytes(StandardCharsets.UTF_8));
 		return FileSystemResult.success();
 	}
 
