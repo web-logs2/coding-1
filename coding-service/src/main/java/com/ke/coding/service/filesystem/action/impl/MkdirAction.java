@@ -24,9 +24,9 @@ public class MkdirAction extends AbstractAction {
 			return FileSystemResult.fail(DIR_LENGTH_TOO_LONG);
 		}
 		String currentPath = command.getCurrentPath();
-		try{
+		try {
 			fileSystemService.mkdir(currentPath, newDir, true);
-		}catch (CodingException e){
+		} catch (CodingException e) {
 			return FileSystemResult.fail(e.getErrorCode());
 		}
 
