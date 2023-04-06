@@ -9,18 +9,18 @@ import com.google.common.collect.Lists;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
  * @time: 2023/3/13 18:37
  * @description:
  */
-@Service
 public class DataRegionService {
 
-	@Autowired
+	public DataRegionService(DataClusterService clusterService) {
+		this.clusterService = clusterService;
+	}
+
 	DataClusterService clusterService;
 
 	/**

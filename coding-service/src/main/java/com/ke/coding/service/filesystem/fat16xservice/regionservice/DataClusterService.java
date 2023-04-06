@@ -7,19 +7,20 @@ import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
 
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
 import com.ke.coding.common.ArrayUtils;
-import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
  * @time: 2023/3/13 18:28
  * @description:
  */
-@Service
 public class DataClusterService {
 
-	IDisk disk = new FileDisk();
+	public DataClusterService(IDisk disk) {
+		this.disk = disk;
+	}
+
+	IDisk disk;
 
 	/**
 	 * 得到所有数据

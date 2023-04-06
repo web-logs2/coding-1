@@ -1,7 +1,6 @@
 package com.ke.coding.service.filesystem.fat16xservice.filesystemservice;
 
 import com.ke.coding.api.dto.filesystem.Fd;
-import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.inputstream.BufferInputStream;
 import java.util.List;
 
 /**
@@ -15,7 +14,7 @@ public interface FileSystemService<F extends Fd> {
 
 	byte[] readFile(F fd);
 
-	BufferInputStream<F> readFileBuffer(F fd);
+	int readFileBuffer(F fd, byte[] data);
 
 	void writeFile(F fd, byte[] data);
 
@@ -23,5 +22,6 @@ public interface FileSystemService<F extends Fd> {
 
 	void mkdir(String currentPath, String fileName, boolean dir);
 
-	void init();
+	void close(F fd);
+
 }

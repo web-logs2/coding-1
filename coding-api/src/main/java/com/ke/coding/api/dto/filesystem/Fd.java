@@ -12,6 +12,7 @@ public abstract class Fd {
 	private String fileName;
 	private long fileSize;
 	private String accessDate;
+	private int pos;
 	public abstract boolean isEmpty();
 
 	protected Fd(String fileName, long fileSize, String accessDate) {

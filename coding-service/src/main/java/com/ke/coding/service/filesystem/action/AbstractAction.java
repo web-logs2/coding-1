@@ -1,8 +1,7 @@
 package com.ke.coding.service.filesystem.action;
 
-import com.ke.coding.api.dto.filesystem.fat16x.Fat16xFileSystem;
+import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -11,12 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractAction implements Action {
 
-	@Autowired
-	public FileSystemService fileSystemService;
-
-
-	public boolean hasIdleRootDirectorySpace(Fat16xFileSystem fat16xFileSystem) {
-		return fat16xFileSystem.getRootDirectoryRegion().haveIdleSpace();
-	}
+	public FileSystemService fileSystemService = new Fat16xSystemServiceImpl();
 
 }

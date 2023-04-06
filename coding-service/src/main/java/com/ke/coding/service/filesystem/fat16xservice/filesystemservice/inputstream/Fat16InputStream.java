@@ -11,20 +11,13 @@ import org.springframework.stereotype.Service;
  * @description:
  */
 @Service
-public class Fat16BufferInputStream extends BufferInputStream<Fat16Fd> {
+public class Fat16InputStream extends InputStream<Fat16Fd> {
 
 	@Autowired
-	FileSystemService fileSystemService;
+	FileSystemService<Fat16Fd> fileSystemService;
 
 	@Override
 	int read(byte[] data) {
-		byte[] bytes = fileSystemService.readFile(fd);
-		if (pos >= data.length) {
-			return -1;
-		} else {
-			System.arraycopy(bytes, pos, data, 0, bytes.length);
-			pos += data.length;
-			return pos;
-		}
+		return fileSystemService.readFileBuffer(fd, data);
 	}
 }

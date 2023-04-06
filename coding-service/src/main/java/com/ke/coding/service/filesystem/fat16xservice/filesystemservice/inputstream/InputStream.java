@@ -9,13 +9,9 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class BufferInputStream<F extends Fd> {
-
-	public int pos;
+public abstract class InputStream<F extends Fd> {
 
 	public F fd;
 
-	int read(byte[] data) {
-		return -1;
-	}
+	abstract int read(byte[] data);
 }

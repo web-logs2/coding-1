@@ -9,19 +9,20 @@ import static com.ke.coding.api.enums.Constants.PER_SECTOR_BYTES;
 import com.ke.coding.api.dto.filesystem.fat16x.fatregion.Fat;
 import com.ke.coding.api.dto.filesystem.fat16x.fatregion.FatRegion;
 import com.ke.coding.common.HexByteUtil;
-import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
  * @time: 2023/3/14 15:11
  * @description:
  */
-@Service
 public class FatRegionService {
 
-	IDisk disk = new FileDisk();
+	public FatRegionService(IDisk disk) {
+		this.disk = disk;
+	}
+
+	IDisk disk;
 
 	public void save(int index, String ncStatus, FatRegion fatRegion) {
 		fatRegion.getFats()[index] = fatRegion.getFats()[index] == null ? new Fat() : fatRegion.getFats()[index];

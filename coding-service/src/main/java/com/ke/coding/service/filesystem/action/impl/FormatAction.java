@@ -20,7 +20,6 @@ public class FormatAction extends AbstractAction {
 	@Override
 	public FileSystemResult run(Command command) {
 		iDisk.format();
-		fileSystemService.init();
 		return FileSystemResult.success("format success");
 	}
 }
