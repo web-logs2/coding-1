@@ -1,25 +1,27 @@
 package com.ke.coding.service.cli.stdincli;
 
-import static com.ke.coding.api.enums.Constants.ROOT_PATH;
-import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
-import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_NOT_FOUND;
-
-import com.google.common.base.Joiner;
 import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemResult;
-import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntrySubInfo;
 import com.ke.coding.api.enums.ActionTypeEnums;
-import com.ke.coding.service.filesystem.fat16xservice.FileSystem;
-import com.ke.risk.safety.common.util.json.JsonUtils;
+import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.action.impl.CatAction;
+import com.ke.coding.service.action.impl.CdAction;
+import com.ke.coding.service.action.impl.EchoAction;
+import com.ke.coding.service.action.impl.FormatAction;
+import com.ke.coding.service.action.impl.LlAction;
+import com.ke.coding.service.action.impl.MkdirAction;
+import com.ke.coding.service.action.impl.PwdAction;
+import com.ke.coding.service.action.impl.TouchAction;
+import com.ke.coding.service.filesystem.inandout.impl.ConsoleErr;
+import com.ke.coding.service.filesystem.inandout.impl.ConsoleIn;
+import com.ke.coding.service.filesystem.inandout.impl.ConsoleOut;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,131 +32,86 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommandCenter {
 
-	@Autowired
-	FileSystem fileSystem;
-
-	@Getter
-	private String currentPath = ROOT_PATH;
-
 	Pattern p = Pattern.compile("\"(.*?)\"");
 	Pattern p1 = Pattern.compile("'(.*?)'");
 
-	public String run(Command command) {
-		String result;
-		command.setCurrentPath(currentPath);
+	public void run(Command command) {
+		AbstractAction action = null;
 		switch (ActionTypeEnums.getByType(command.getAction())) {
-			case DEFAULT:
-				result = ACTION_NOT_FOUND.message();
-				break;
 			case CAT:
-				result = cat(command);
+				action = new CatAction();
+				setInOut(action, command.getOriginData());
 				break;
 			case LL:
-				result = ll();
+				action = new LlAction();
+				setInOut(action, command.getOriginData());
 				break;
 			case FORMAT:
-				result = format();
+				action = new FormatAction();
 				break;
 			case PWD:
-				result = pwd();
+				action = new PwdAction();
+				setInOut(action, command.getOriginData());
 				break;
 			case CD:
-				String[] s = command.getOriginData().split(" ");
-				if (s.length != 2){
-					return ACTION_ERROR.message();
-				}
-				command.setParams(Collections.singletonList(s[1]));
-				FileSystemResult fileSystemResult = fileSystem.execute(command);
-				if (fileSystemResult.isSuccess()){
-					currentPath = fileSystemResult.getData();
-				}
-				result = fileSystemResult.getData();
+				action = new CdAction();
+				setInOut(action, command.getOriginData());
 				break;
 			case ECHO:
-				result = echo(command);
+				action = new EchoAction();
+				setInOut(action, command.getOriginData());
+				break;
+			case MKDIR:
+				action = new MkdirAction();
+				setInOut(action, command.getOriginData());
+				break;
+			case TOUCH:
+				action = new TouchAction();
+				setInOut(action, command.getOriginData());
 				break;
 			default:
 				String[] s1 = command.getOriginData().split(" ");
-				if (s1.length != 2){
-					return ACTION_ERROR.message();
-				}
 				command.setParams(Collections.singletonList(s1[1]));
-				return fileSystem.execute(command).getData();
 		}
-		return result;
+		action.run();
 	}
 
-	public String cat(Command command){
-		String[] s1 = command.getOriginData().split(" ");
-		if (s1.length != 2){
-			return ACTION_ERROR.message();
-		}
-		command.setParams(Collections.singletonList(s1[1]));
-		String data = fileSystem.execute(command).getData();
-		if (data.contains("\\n")){
-			data = data.replace("\\n", "\n");
-		}
-		return data;
+	private void setInOut(AbstractAction action, String input) {
+		action.setIn(new ConsoleIn(input.getBytes(StandardCharsets.UTF_8)));
+		action.setOut(new ConsoleOut());
+		action.setErr(new ConsoleErr());
 	}
 
-
-	public String ll() {
-		FileSystemResult result = fileSystem.execute(Command.build("ll", currentPath));
-		List<DirectoryEntrySubInfo> directoryEntrySubInfos = JsonUtils.parseStr2List(result.getData(), DirectoryEntrySubInfo.class);
-		List<String> lines = new ArrayList<>();
-		for (DirectoryEntrySubInfo directoryEntrySubInfo : directoryEntrySubInfos) {
-			String sb = StringUtils.rightPad(directoryEntrySubInfo.getFileSize() + "", 10, " ")
-				+ StringUtils.rightPad(directoryEntrySubInfo.getAccessDate() + "", 14, " ")
-				+ directoryEntrySubInfo.getFileName();
-			lines.add(sb);
-		}
-		return Joiner.on("\n").join(lines);
-	}
-
-	public String format() {
-		FileSystemResult format = fileSystem.execute(Command.build("format", currentPath));
-		FileSystemResult cd = fileSystem.execute(Command.build("cd", currentPath, Collections.singletonList(ROOT_PATH)));
-		currentPath = cd.getData();
-		return format.getData();
-	}
-
-	public String pwd() {
-		return currentPath;
-	}
-
-
-	public String echo(Command command){
+	public String echo(Command command) {
 		command.setParams(buildParams(command.getOriginData()));
-		return fileSystem.execute(command).getData();
+		return "";
 	}
 
-	List<String> buildParams(String input){
+	List<String> buildParams(String input) {
 		List<String> result = new ArrayList<>();
-		if (input.contains("\"") || input.contains("'")){
+		if (input.contains("\"") || input.contains("'")) {
 			String data = "";
-			Matcher m= p.matcher(input);
-			while(m.find())
-			{
+			Matcher m = p.matcher(input);
+			while (m.find()) {
 				data = m.group();
 			}
-			if (StringUtils.isNotBlank(data)){
-				result.add(data.replace("\"",""));
+			if (StringUtils.isNotBlank(data)) {
+				result.add(data.replace("\"", ""));
 				String replace = input.replace(data, "");
 				String[] split = replace.split(" ");
 				result.addAll(Arrays.asList(split).subList(1, split.length));
 				result.remove("");
-			}else {
+			} else {
 				Matcher m1 = p1.matcher(input);
-				while(m1.find())
-				{
+				while (m1.find()) {
 					data = m.group();
 				}
-				result.add(data.replace("'",""));
+				result.add(data.replace("'", ""));
 				String replace = input.replace(data, "");
 				String[] split = replace.split(" ");
 				result.addAll(Arrays.asList(split).subList(1, split.length));
 			}
-		}else {
+		} else {
 			String[] split = input.split(" ");
 			result.addAll(Arrays.asList(split).subList(1, split.length));
 		}

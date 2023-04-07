@@ -1,4 +1,4 @@
-package com.ke.coding.service.filesystem.fat16xservice.filesystemservice.inputstream;
+package com.ke.coding.service.stream.input;
 
 import com.ke.coding.api.dto.filesystem.Fd;
 import lombok.Data;
@@ -9,9 +9,8 @@ import lombok.Data;
  * @description:
  */
 @Data
-public abstract class InputStream<F extends Fd> {
+public abstract class AbstractInputStream<F extends Fd> implements InputStream {
 
 	public F fd;
 
-	abstract int read(byte[] data);
 }

@@ -1,14 +1,16 @@
-package com.ke.coding.service.filesystem.action.impl;
+package com.ke.coding.service.action.impl;
 
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
+import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 import static com.ke.coding.api.enums.ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.api.exception.CodingException;
-import com.ke.coding.service.filesystem.action.AbstractAction;
+import com.ke.coding.service.action.AbstractAction;
+import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,9 +22,14 @@ import org.springframework.stereotype.Service;
 public class CdAction extends AbstractAction {
 
 	@Override
-	public FileSystemResult run(Command command) {
-		String currentPath = command.getCurrentPath();
-		String cdPath = command.getParams().get(0);
+	public void run() {
+		byte[] input = in.getInput();
+		String originData = new String(input);
+		String[] s1 = originData.split(" ");
+		if (s1.length != 2) {
+			err.err(ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
+		}
+		String cdPath = s1[1];
 		if (cdPath.contains("..")) {
 			String[] cdPathSplit = cdPath.split(PATH_SPLIT);
 			String[] currentPathSplit = currentPath.split(PATH_SPLIT);
@@ -31,19 +38,22 @@ public class CdAction extends AbstractAction {
 			for (int i = 0; i < currentPathSplit.length - cdPathSplit.length; i++) {
 				result = ROOT_PATH + currentPathSplit[i];
 			}
-			return FileSystemResult.success(result);
-
+			currentPath = result;
+			out.output(result.getBytes(StandardCharsets.UTF_8));
 		} else if (cdPath.equals(ROOT_PATH)) {
-			return FileSystemResult.success(ROOT_PATH);
+			out.output(ROOT_PATH.getBytes(StandardCharsets.UTF_8));
 		} else {
 			if (!cdPath.startsWith(PATH_SPLIT)) {
 				cdPath = currentPath.equals(ROOT_PATH) ? currentPath + cdPath : currentPath + PATH_SPLIT + cdPath;
 			}
 			Fd open = fileSystemService.open(cdPath);
 			if (open.isEmpty()) {
-				throw new CodingException(NO_SUCH_FILE_OR_DIRECTORY);
+				err.err(NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
+			} else {
+				currentPath = cdPath;
+				out.output(cdPath.getBytes(StandardCharsets.UTF_8));
 			}
-			return FileSystemResult.success(cdPath);
 		}
+
 	}
 }

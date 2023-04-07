@@ -1,10 +1,8 @@
-package com.ke.coding.service.filesystem.action.impl;
+package com.ke.coding.service.action.impl;
 
-import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemResult;
+import com.ke.coding.service.action.AbstractAction;
 import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
-import com.ke.coding.service.filesystem.action.AbstractAction;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,9 +15,11 @@ public class FormatAction extends AbstractAction {
 
 	IDisk iDisk = new FileDisk();
 
+	/**
+	 * 运行
+	 */
 	@Override
-	public FileSystemResult run(Command command) {
+	public void run() {
 		iDisk.format();
-		return FileSystemResult.success("format success");
 	}
 }

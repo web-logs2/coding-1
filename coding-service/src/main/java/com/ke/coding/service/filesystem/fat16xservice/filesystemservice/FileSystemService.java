@@ -14,7 +14,7 @@ public interface FileSystemService<F extends Fd> {
 
 	byte[] readFile(F fd);
 
-	int readFileBuffer(F fd, byte[] data);
+	int readFile(F fd, byte[] data);
 
 	void writeFile(F fd, byte[] data);
 

@@ -1,13 +1,13 @@
-package com.ke.coding.service.filesystem.action.impl;
+package com.ke.coding.service.action.impl;
 
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.FILENAME_LENGTH_TOO_LONG;
 
 import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
-import com.ke.coding.service.filesystem.action.AbstractAction;
+import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
+import com.ke.coding.service.action.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +20,11 @@ import org.springframework.stereotype.Service;
 public class EchoAction extends AbstractAction {
 
 	@Override
-	public FileSystemResult run(Command command) {
-		String currentPath = command.getCurrentPath();
-		String wholeFileName = command.getParams().get(2);
+	public void run() {
+		byte[] input = in.getInput();
+		String originData = new String(input);
+		String[] s1 = originData.split(" ");
+		String wholeFileName = s1[3];
 		String fileName = wholeFileName;
 		String fileNameExtension = "";
 		if (wholeFileName.contains(".")) {
@@ -31,16 +33,14 @@ public class EchoAction extends AbstractAction {
 			fileNameExtension = split[1];
 		}
 		if (fileName.length() > 8 || fileNameExtension.length() > 3) {
-			return FileSystemResult.fail(FILENAME_LENGTH_TOO_LONG);
+			err.err(FILENAME_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 		}
 		String pathAndFile = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		Fd open = fileSystemService.open(pathAndFile);
+		Fat16Fd open = fileSystemService.open(pathAndFile);
 		if (open.isEmpty()) {
 			fileSystemService.mkdir(currentPath, wholeFileName, false);
 		}
-		fileSystemService.writeFile(open, command.getParams().get(0).getBytes(StandardCharsets.UTF_8));
-		return FileSystemResult.success();
+		fileSystemService.writeFile(open, s1[1].getBytes(StandardCharsets.UTF_8));
 	}
-
 
 }

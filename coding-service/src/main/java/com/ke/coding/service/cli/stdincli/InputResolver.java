@@ -2,6 +2,7 @@ package com.ke.coding.service.cli.stdincli;
 
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.enums.ErrorCodeEnum;
+import com.ke.coding.service.action.AbstractAction;
 import java.util.Scanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,12 @@ public class InputResolver {
 				command.setAction(action);
 				command.setOriginData(input);
 				try {
-					String result = commandCenter.run(command);
-					System.out.println(result);
-					System.out.print("root@xyl-shell:" + commandCenter.getCurrentPath() + "$");
+					commandCenter.run(command);
+					System.out.print("root@xyl-shell:" + AbstractAction.currentPath + "$");
 				} catch (Exception e) {
 					e.printStackTrace();
 					System.out.println(ErrorCodeEnum.ACTION_ERROR.message());
-					System.out.print("root@xyl-shell:" + commandCenter.getCurrentPath() + "$");
+					System.out.print("root@xyl-shell:" + AbstractAction.currentPath + "$");
 				}
 			}
 		}

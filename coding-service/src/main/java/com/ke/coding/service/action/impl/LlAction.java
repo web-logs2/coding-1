@@ -1,13 +1,17 @@
-package com.ke.coding.service.filesystem.action.impl;
+package com.ke.coding.service.action.impl;
 
+import com.google.common.base.Joiner;
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.FileSystemResult;
+import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntrySubInfo;
-import com.ke.coding.service.filesystem.action.AbstractAction;
+import com.ke.coding.service.action.AbstractAction;
 import com.ke.risk.safety.common.util.json.JsonUtils;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,14 +23,21 @@ import org.springframework.stereotype.Service;
 public class LlAction extends AbstractAction {
 
 	@Override
-	public FileSystemResult run(Command command) {
+	public void run() {
 		List<DirectoryEntrySubInfo> result = new ArrayList<>();
-		Fd open = fileSystemService.open(command.getCurrentPath());
-		List<Fd> fdList = fileSystemService.list(open);
+		Fat16Fd open = fileSystemService.open(currentPath);
+		List<Fat16Fd> fdList = fileSystemService.list(open);
 		for (Fd fd : fdList) {
 			result.add(buildSubInfo(fd));
 		}
-		return FileSystemResult.success(JsonUtils.parseBean2Str(result));
+		List<String> lines = new ArrayList<>();
+		for (DirectoryEntrySubInfo directoryEntrySubInfo : result) {
+			String sb = StringUtils.rightPad(directoryEntrySubInfo.getFileSize() + "", 10, " ")
+				+ StringUtils.rightPad(directoryEntrySubInfo.getAccessDate() + "", 14, " ")
+				+ directoryEntrySubInfo.getFileName();
+			lines.add(sb);
+		}
+		out.output(Joiner.on("\n").join(lines).getBytes(StandardCharsets.UTF_8));
 	}
 
 	/**
