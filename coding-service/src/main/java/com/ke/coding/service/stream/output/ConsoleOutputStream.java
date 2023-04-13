@@ -5,7 +5,7 @@ package com.ke.coding.service.stream.output;
  * @time: 2023/4/6 17:42
  * @description:
  */
-public class ConsoleOutputStream extends AbstractFat16OutputStream{
+public class ConsoleOutputStream implements OutputStream {
 
 	/**
 	 * 写

@@ -12,8 +12,6 @@ public interface FileSystemService<F extends Fd> {
 
 	F open(String fileName);
 
-	byte[] readFile(F fd);
-
 	int readFile(F fd, byte[] data);
 
 	void writeFile(F fd, byte[] data);

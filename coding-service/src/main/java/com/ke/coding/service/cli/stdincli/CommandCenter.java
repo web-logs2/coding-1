@@ -1,5 +1,9 @@
 package com.ke.coding.service.cli.stdincli;
 
+import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
+import static com.ke.coding.api.enums.Constants.ROOT_PATH;
+import static com.ke.coding.service.action.AbstractAction.currentPath;
+
 import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.action.AbstractAction;
@@ -14,6 +18,7 @@ import com.ke.coding.service.action.impl.TouchAction;
 import com.ke.coding.service.filesystem.inandout.impl.ConsoleErr;
 import com.ke.coding.service.filesystem.inandout.impl.ConsoleIn;
 import com.ke.coding.service.filesystem.inandout.impl.ConsoleOut;
+import com.ke.coding.service.filesystem.inandout.impl.FileOut;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,11 +45,11 @@ public class CommandCenter {
 		switch (ActionTypeEnums.getByType(command.getAction())) {
 			case CAT:
 				action = new CatAction();
-				setInOut(action, command.getOriginData());
+				buildRedirectAction(action, command.getOriginData());
 				break;
 			case LL:
 				action = new LlAction();
-				setInOut(action, command.getOriginData());
+				buildRedirectAction(action, command.getOriginData());
 				break;
 			case FORMAT:
 				action = new FormatAction();
@@ -59,7 +64,7 @@ public class CommandCenter {
 				break;
 			case ECHO:
 				action = new EchoAction();
-				setInOut(action, command.getOriginData());
+				buildRedirectAction(action, command.getOriginData());
 				break;
 			case MKDIR:
 				action = new MkdirAction();
@@ -74,6 +79,24 @@ public class CommandCenter {
 				command.setParams(Collections.singletonList(s1[1]));
 		}
 		action.run();
+	}
+
+	private void buildRedirectAction(AbstractAction action, String input) {
+		String redirectPath = "";
+		if (input.contains(">>")) {
+			String[] split = input.split(">>");
+			redirectPath = split[1];
+		} else if (input.contains(">")) {
+			String[] split = input.split(">");
+			redirectPath = split[1];
+		}
+
+		if (StringUtils.isNotBlank(redirectPath)) {
+			if (!redirectPath.startsWith("/")) {
+				redirectPath = currentPath.equals(ROOT_PATH) ? currentPath + redirectPath : currentPath + PATH_SPLIT + redirectPath;
+			}
+		}
+		action.setOut(StringUtils.isNotBlank(redirectPath) ? new FileOut(redirectPath) : new ConsoleOut());
 	}
 
 	private void setInOut(AbstractAction action, String input) {

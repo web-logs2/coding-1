@@ -35,12 +35,15 @@ public class EchoAction extends AbstractAction {
 		if (fileName.length() > 8 || fileNameExtension.length() > 3) {
 			err.err(FILENAME_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 		}
+		if (!wholeFileName.startsWith("/")) {
+			wholeFileName = currentPath.equals(ROOT_PATH) ? currentPath + wholeFileName : currentPath + PATH_SPLIT + wholeFileName;
+		}
 		String pathAndFile = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		Fat16Fd open = fileSystemService.open(pathAndFile);
-		if (open.isEmpty()) {
+		Fat16Fd fat16Fd = fileSystemService.open(pathAndFile);
+		if (fat16Fd.isEmpty()) {
 			fileSystemService.mkdir(currentPath, wholeFileName, false);
 		}
-		fileSystemService.writeFile(open, s1[1].getBytes(StandardCharsets.UTF_8));
+		out.output(s1[1].getBytes(StandardCharsets.UTF_8));
 	}
 
 }

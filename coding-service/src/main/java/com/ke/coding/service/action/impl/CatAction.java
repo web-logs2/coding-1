@@ -4,8 +4,6 @@ import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 
-import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ErrorCodeEnum;
 import com.ke.coding.service.action.AbstractAction;
@@ -29,16 +27,19 @@ public class CatAction extends AbstractAction {
 			err.err(ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
 		}
 		String fileName = s1[1];
-		currentPath = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		Fat16Fd fd = fileSystemService.open(currentPath);
+		String filePath = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
+		Fat16Fd fd = fileSystemService.open(filePath);
 		if (fd.isEmpty()) {
 			err.err(ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
 		}
 		InputStream inputStream = new Fat16InputStream(fd);
 		byte[] data = new byte[1024];
-
-		while (-1 != inputStream.read(data)) {
-			out.output(data);
+		int read = inputStream.read(data);
+		while (-1 != read) {
+			byte[] temp = new byte[read];
+			System.arraycopy(data, 0, temp, 0, read);
+			out.output(temp);
+			read = inputStream.read(data);
 		}
 	}
 
