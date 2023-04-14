@@ -1,6 +1,6 @@
 package com.ke.coding.service.cli.stdincli;
 
-import com.ke.coding.api.dto.cli.Command;
+import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.enums.ErrorCodeEnum;
 import com.ke.coding.service.action.AbstractAction;
 import java.util.Scanner;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @description:
  */
 @Service
-public class InputResolver {
+public class SshInputResolver {
 
 	private final Scanner sc = new Scanner(System.in);
 
@@ -29,11 +29,11 @@ public class InputResolver {
 				run = false;
 			} else {
 				String action = input.split(" ")[0];
-				Command command = new Command();
-				command.setAction(action);
-				command.setOriginData(input);
+				CommandContext commandContext = new CommandContext();
+				commandContext.setAction(action);
+				commandContext.setOriginData(input);
 				try {
-					commandCenter.run(command);
+					commandCenter.run(commandContext);
 					System.out.print("root@xyl-shell:" + AbstractAction.currentPath + "$");
 				} catch (Exception e) {
 					e.printStackTrace();

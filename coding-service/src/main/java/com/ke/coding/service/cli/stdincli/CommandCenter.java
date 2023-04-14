@@ -4,7 +4,7 @@ import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.service.action.AbstractAction.currentPath;
 
-import com.ke.coding.api.dto.cli.Command;
+import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.action.AbstractAction;
 import com.ke.coding.service.action.impl.CatAction;
@@ -40,43 +40,43 @@ public class CommandCenter {
 	Pattern p = Pattern.compile("\"(.*?)\"");
 	Pattern p1 = Pattern.compile("'(.*?)'");
 
-	public void run(Command command) {
+	public void run(CommandContext commandContext) {
 		AbstractAction action = null;
-		switch (ActionTypeEnums.getByType(command.getAction())) {
+		switch (ActionTypeEnums.getByType(commandContext.getAction())) {
 			case CAT:
 				action = new CatAction();
-				buildRedirectAction(action, command.getOriginData());
+				buildRedirectAction(action, commandContext.getOriginData());
 				break;
 			case LL:
 				action = new LlAction();
-				buildRedirectAction(action, command.getOriginData());
+				buildRedirectAction(action, commandContext.getOriginData());
 				break;
 			case FORMAT:
 				action = new FormatAction();
 				break;
 			case PWD:
 				action = new PwdAction();
-				setInOut(action, command.getOriginData());
+				setInOut(action, commandContext.getOriginData());
 				break;
 			case CD:
 				action = new CdAction();
-				setInOut(action, command.getOriginData());
+				setInOut(action, commandContext.getOriginData());
 				break;
 			case ECHO:
 				action = new EchoAction();
-				buildRedirectAction(action, command.getOriginData());
+				buildRedirectAction(action, commandContext.getOriginData());
 				break;
 			case MKDIR:
 				action = new MkdirAction();
-				setInOut(action, command.getOriginData());
+				setInOut(action, commandContext.getOriginData());
 				break;
 			case TOUCH:
 				action = new TouchAction();
-				setInOut(action, command.getOriginData());
+				setInOut(action, commandContext.getOriginData());
 				break;
 			default:
-				String[] s1 = command.getOriginData().split(" ");
-				command.setParams(Collections.singletonList(s1[1]));
+				String[] s1 = commandContext.getOriginData().split(" ");
+				commandContext.setParams(Collections.singletonList(s1[1]));
 		}
 		action.run();
 	}
@@ -96,7 +96,9 @@ public class CommandCenter {
 				redirectPath = currentPath.equals(ROOT_PATH) ? currentPath + redirectPath : currentPath + PATH_SPLIT + redirectPath;
 			}
 		}
+		action.setIn(new ConsoleIn(input.getBytes(StandardCharsets.UTF_8)));
 		action.setOut(StringUtils.isNotBlank(redirectPath) ? new FileOut(redirectPath) : new ConsoleOut());
+		action.setErr(new ConsoleErr());
 	}
 
 	private void setInOut(AbstractAction action, String input) {
@@ -105,8 +107,8 @@ public class CommandCenter {
 		action.setErr(new ConsoleErr());
 	}
 
-	public String echo(Command command) {
-		command.setParams(buildParams(command.getOriginData()));
+	public String echo(CommandContext commandContext) {
+		commandContext.setParams(buildParams(commandContext.getOriginData()));
 		return "";
 	}
 

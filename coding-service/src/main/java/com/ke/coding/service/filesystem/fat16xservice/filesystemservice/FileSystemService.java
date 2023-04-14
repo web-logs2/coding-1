@@ -18,7 +18,7 @@ public interface FileSystemService<F extends Fd> {
 
 	List<F> list(F fd);
 
-	void mkdir(String currentPath, String fileName, boolean dir);
+	void mkdir(String filePath, boolean dir);
 
 	void close(F fd);
 

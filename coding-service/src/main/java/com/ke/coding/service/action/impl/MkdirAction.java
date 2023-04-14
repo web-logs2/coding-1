@@ -1,5 +1,6 @@
 package com.ke.coding.service.action.impl;
 
+import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 import static com.ke.coding.api.enums.ErrorCodeEnum.DIR_LENGTH_TOO_LONG;
 import static com.ke.coding.api.enums.ErrorCodeEnum.SYSTEM_SUCCESS;
@@ -30,7 +31,7 @@ public class MkdirAction extends AbstractAction {
 			err.err(DIR_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 		}
 		try {
-			fileSystemService.mkdir(currentPath, newDir, true);
+			fileSystemService.mkdir(currentPath.equals(ROOT_PATH) ? currentPath : currentPath + newDir, true);
 		} catch (CodingException e) {
 			err.err(e.getErrorCode().message().getBytes(StandardCharsets.UTF_8));
 		}

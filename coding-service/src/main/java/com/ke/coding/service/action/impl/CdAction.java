@@ -5,10 +5,7 @@ import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 import static com.ke.coding.api.enums.ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY;
 
-import com.ke.coding.api.dto.cli.Command;
 import com.ke.coding.api.dto.filesystem.Fd;
-import com.ke.coding.api.dto.filesystem.FileSystemResult;
-import com.ke.coding.api.exception.CodingException;
 import com.ke.coding.service.action.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import org.springframework.stereotype.Service;

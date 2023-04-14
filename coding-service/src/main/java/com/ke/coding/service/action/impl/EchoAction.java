@@ -4,8 +4,6 @@ import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.FILENAME_LENGTH_TOO_LONG;
 
-import com.ke.coding.api.dto.cli.Command;
-import com.ke.coding.api.dto.filesystem.FileSystemResult;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.service.action.AbstractAction;
 import java.nio.charset.StandardCharsets;
@@ -38,10 +36,9 @@ public class EchoAction extends AbstractAction {
 		if (!wholeFileName.startsWith("/")) {
 			wholeFileName = currentPath.equals(ROOT_PATH) ? currentPath + wholeFileName : currentPath + PATH_SPLIT + wholeFileName;
 		}
-		String pathAndFile = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		Fat16Fd fat16Fd = fileSystemService.open(pathAndFile);
+		Fat16Fd fat16Fd = fileSystemService.open(wholeFileName);
 		if (fat16Fd.isEmpty()) {
-			fileSystemService.mkdir(currentPath, wholeFileName, false);
+			fileSystemService.mkdir(wholeFileName, false);
 		}
 		out.output(s1[1].getBytes(StandardCharsets.UTF_8));
 	}
