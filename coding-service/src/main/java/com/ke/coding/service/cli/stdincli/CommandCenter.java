@@ -56,23 +56,28 @@ public class CommandCenter {
 				break;
 			case PWD:
 				action = new PwdAction();
-				setInOut(action, commandContext.getOriginData());
+				buildAction(action, commandContext.getOriginData());
 				break;
 			case CD:
 				action = new CdAction();
-				setInOut(action, commandContext.getOriginData());
+				buildAction(action, commandContext.getOriginData());
 				break;
 			case ECHO:
 				action = new EchoAction();
-				buildRedirectAction(action, commandContext.getOriginData());
+				String[] s = commandContext.getOriginData().split(" ");
+				if (s.length == 2 && s[1].startsWith("\"") && s[1].endsWith("\"")){
+					buildAction(action, commandContext.getOriginData());
+				}else {
+					buildRedirectAction(action, commandContext.getOriginData());
+				}
 				break;
 			case MKDIR:
 				action = new MkdirAction();
-				setInOut(action, commandContext.getOriginData());
+				buildAction(action, commandContext.getOriginData());
 				break;
 			case TOUCH:
 				action = new TouchAction();
-				setInOut(action, commandContext.getOriginData());
+				buildAction(action, commandContext.getOriginData());
 				break;
 			default:
 				String[] s1 = commandContext.getOriginData().split(" ");
@@ -92,6 +97,9 @@ public class CommandCenter {
 		}
 
 		if (StringUtils.isNotBlank(redirectPath)) {
+			if (redirectPath.startsWith(" ")){
+				redirectPath = redirectPath.substring(1);
+			}
 			if (!redirectPath.startsWith("/")) {
 				redirectPath = currentPath.equals(ROOT_PATH) ? currentPath + redirectPath : currentPath + PATH_SPLIT + redirectPath;
 			}
@@ -101,7 +109,7 @@ public class CommandCenter {
 		action.setErr(new ConsoleErr());
 	}
 
-	private void setInOut(AbstractAction action, String input) {
+	private void buildAction(AbstractAction action, String input) {
 		action.setIn(new ConsoleIn(input.getBytes(StandardCharsets.UTF_8)));
 		action.setOut(new ConsoleOut());
 		action.setErr(new ConsoleErr());

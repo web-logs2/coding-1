@@ -29,6 +29,10 @@ public class FileOut implements Out {
 	@Override
 	public void output(byte[] data) {
 		Fat16Fd fd = fileSystemService.open(filePath);
+		if (fd.isEmpty()){
+			fileSystemService.mkdir(filePath, false);
+			fd = fileSystemService.open(filePath);
+		}
 		Fat16xOutputStream stream = new Fat16xOutputStream(fd);
 		stream.write(data);
 	}

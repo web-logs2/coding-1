@@ -14,6 +14,6 @@ public class ConsoleOutputStream implements OutputStream {
 	 */
 	@Override
 	public void write(byte[] data) {
-		System.out.println(new String(data));
+		System.out.println(new String(data).replace("\\n", "\n"));
 	}
 }
