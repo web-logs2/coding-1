@@ -4,21 +4,17 @@ import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.enums.ErrorCodeEnum;
 import com.ke.coding.service.action.AbstractAction;
 import java.util.Scanner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
  * @time: 2023/3/8 12:10
  * @description:
  */
-@Service
 public class LocalInputResolver {
 
 	private final Scanner sc = new Scanner(System.in);
 
-	@Autowired
-	CommandCenter commandCenter;
+	CommandCenter commandCenter = new CommandCenter();
 
 	public void run() {
 		System.out.print("root@xyl-shell:/$");
