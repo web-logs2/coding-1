@@ -1,7 +1,6 @@
 package com.ke.coding;
 
 import com.ke.coding.service.cli.stdincli.LocalInputResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-	@Autowired
-	LocalInputResolver resolver;
+	LocalInputResolver resolver = new LocalInputResolver();
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);

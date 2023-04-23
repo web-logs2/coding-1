@@ -5,10 +5,11 @@ import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
-import com.ke.coding.service.filesystem.inandout.Err;
-import com.ke.coding.service.filesystem.inandout.In;
-import com.ke.coding.service.filesystem.inandout.Out;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import lombok.Data;
+import lombok.SneakyThrows;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -22,10 +23,21 @@ public abstract class AbstractAction implements Action {
 
 	public FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();
 
-	protected In in;
+	protected InputStream in;
 
-	protected Out out;
+	protected OutputStream out;
 
-	protected Err err;
+	protected OutputStream err;
+
+	@SneakyThrows
+	public byte[] readIn() {
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int length;
+		while ((length = in.read(buffer)) != -1) {
+			result.write(buffer, 0, length);
+		}
+		return result.toByteArray();
+	}
 
 }

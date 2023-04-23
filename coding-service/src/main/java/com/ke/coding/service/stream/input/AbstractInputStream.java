@@ -1,6 +1,7 @@
 package com.ke.coding.service.stream.input;
 
 import com.ke.coding.api.dto.filesystem.Fd;
+import java.io.InputStream;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public abstract class AbstractInputStream<F extends Fd> implements InputStream {
+public abstract class AbstractInputStream<F extends Fd> extends InputStream {
 
 	public F fd;
 

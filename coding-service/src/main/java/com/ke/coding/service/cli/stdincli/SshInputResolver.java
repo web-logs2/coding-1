@@ -12,13 +12,11 @@ import org.springframework.stereotype.Service;
  * @time: 2023/3/8 12:10
  * @description:
  */
-@Service
 public class SshInputResolver {
 
 	private final Scanner sc = new Scanner(System.in);
 
-	@Autowired
-	CommandCenter commandCenter;
+	CommandCenter commandCenter = new CommandCenter();
 
 	public void run() {
 		System.out.print("root@xyl-shell:/$");

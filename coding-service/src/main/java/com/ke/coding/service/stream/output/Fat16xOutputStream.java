@@ -3,6 +3,7 @@ package com.ke.coding.service.stream.output;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
+import java.io.IOException;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -15,6 +16,11 @@ public class Fat16xOutputStream extends AbstractFileOutputStream<Fat16Fd> {
 
 	public Fat16xOutputStream(Fat16Fd fd) {
 		super(fd);
+	}
+
+	@Override
+	public void write(int b) throws IOException {
+
 	}
 
 	/**

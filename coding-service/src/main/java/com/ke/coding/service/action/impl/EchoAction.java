@@ -9,6 +9,7 @@ import com.ke.coding.service.action.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +24,15 @@ public class EchoAction extends AbstractAction {
 	Pattern p = Pattern.compile("\"(.*?)\"");
 	Pattern p1 = Pattern.compile("'(.*?)'");
 
+	@SneakyThrows
 	@Override
 	public void run() {
-		byte[] input = in.getInput();
+		byte[] input = readIn();
 		String originData = new String(input);
 		String[] s = originData.split(" ");
 		//回显
 		if (s.length == 2 && s[1].startsWith("\"") && s[1].endsWith("\"")) {
-			out.output(buildData(s[1]).getBytes(StandardCharsets.UTF_8));
+			out.write(buildData(s[1]).getBytes(StandardCharsets.UTF_8));
 		} else {
 			//重定向
 			String wholeFileName;
@@ -54,7 +56,7 @@ public class EchoAction extends AbstractAction {
 				fileNameExtension = split[1];
 			}
 			if (fileName.length() > 8 || fileNameExtension.length() > 3) {
-				err.err(FILENAME_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
+				err.write(FILENAME_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 			}
 			if (!wholeFileName.startsWith("/")) {
 				wholeFileName = currentPath.equals(ROOT_PATH) ? currentPath + wholeFileName : currentPath + PATH_SPLIT + wholeFileName;
@@ -64,7 +66,7 @@ public class EchoAction extends AbstractAction {
 			if (fat16Fd.isEmpty()) {
 				fileSystemService.mkdir(wholeFileName, false);
 			}
-			out.output(buildData(data).getBytes(StandardCharsets.UTF_8));
+			out.write(buildData(data).getBytes(StandardCharsets.UTF_8));
 		}
 	}
 

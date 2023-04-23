@@ -8,6 +8,7 @@ import com.ke.coding.service.action.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LlAction extends AbstractAction {
 
+	@SneakyThrows
 	@Override
 	public void run() {
 		List<DirectoryEntrySubInfo> result = new ArrayList<>();
@@ -34,7 +36,7 @@ public class LlAction extends AbstractAction {
 				+ directoryEntrySubInfo.getFileName();
 			lines.add(sb);
 		}
-		out.output(Joiner.on("\n").join(lines).getBytes(StandardCharsets.UTF_8));
+		out.write(Joiner.on("\n").join(lines).getBytes(StandardCharsets.UTF_8));
 	}
 
 	/**
