@@ -54,6 +54,15 @@ public class FatRegion {
 		return index;
 	}
 
+	/**
+	 * rm脂肪
+	 *
+	 * @param index 指数
+	 */
+	public void rmFat(int index){
+		fats[index] = null;
+	}
+
 
 	/**
 	 * 集群结尾坐标
@@ -71,7 +80,7 @@ public class FatRegion {
 	}
 
 	/**
-	 * 集群链表坐标,不包含当前传入坐标
+	 * 集群链表坐标
 	 *
 	 * @param startingCluster startingCluster
 	 * @return int

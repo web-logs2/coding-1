@@ -1,6 +1,6 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
 
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
 

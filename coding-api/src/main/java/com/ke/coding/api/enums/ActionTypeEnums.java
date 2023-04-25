@@ -18,6 +18,8 @@ public enum ActionTypeEnums {
 	CAT("cat", "catAction"),
 	CD("cd", "cdAction"),
 	PWD("pwd", "pwdAction"),
+	RM("rm", "rmAction"),
+	CLEAR("clear", "clearAction"),
 	DEFAULT("default", "defaultAction"),
 
 	;

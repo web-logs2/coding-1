@@ -1,30 +1,30 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
+
+import static com.ke.coding.api.enums.Constants.O_SHLOCK;
 
 import com.google.common.base.Joiner;
 import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntrySubInfo;
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
  * @time: 2023/3/7 10:38
  * @description:
  */
-@Service
 public class LlAction extends AbstractAction {
 
 	@SneakyThrows
 	@Override
 	public void run() {
 		List<DirectoryEntrySubInfo> result = new ArrayList<>();
-		Fat16Fd open = fileSystemService.open(currentPath);
+		Fat16Fd open = fileSystemService.open(currentPath, O_SHLOCK);
 		List<Fat16Fd> fdList = fileSystemService.list(open);
 		for (Fd fd : fdList) {
 			result.add(buildSubInfo(fd));
@@ -37,6 +37,7 @@ public class LlAction extends AbstractAction {
 			lines.add(sb);
 		}
 		out.write(Joiner.on("\n").join(lines).getBytes(StandardCharsets.UTF_8));
+		fileSystemService.close(open);
 	}
 
 	/**

@@ -1,21 +1,23 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
 
+import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY_POS;
+import static com.ke.coding.api.enums.Constants.O_EXLOCK;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
-import static com.ke.coding.api.enums.ErrorCodeEnum.DIR_LENGTH_TOO_LONG;
 import static com.ke.coding.api.enums.ErrorCodeEnum.SYSTEM_SUCCESS;
 
+import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.exception.CodingException;
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
 
 /**
  * @author: xueyunlong001@ke.com
- * @time: 2023/3/7 10:38
+ * @time: 2023/4/25 16:25
  * @description:
  */
-public class TouchAction extends AbstractAction {
+public class RmAction extends AbstractAction {
 
 	@SneakyThrows
 	@Override
@@ -29,15 +31,19 @@ public class TouchAction extends AbstractAction {
 
 		//step: 文件名，文件后缀长度限制
 		String newDir = s1[1];
-		if (newDir.length() > 8) {
-			err.write(DIR_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
-		}
+		String filePathName = currentPath.equals(ROOT_PATH) ? currentPath : currentPath + newDir;
 		try {
-			fileSystemService.mkdir(currentPath.equals(ROOT_PATH) ? currentPath : currentPath + newDir, false);
+			Fat16Fd fd = fileSystemService.open(filePathName, O_EXLOCK);
+			if (fd != null && !fd.isEmpty()) {
+				//文件or空目录
+				if (1 != fd.getDirectoryEntry().getAttribute(ATTRIBUTE_DIRECTORY_POS) || fd.getDirectoryEntry().getStartingCluster() != 0) {
+					fileSystemService.rm(fd);
+				}
+			}
+			fileSystemService.close(fd);
 		} catch (CodingException e) {
 			err.write(e.getErrorCode().message().getBytes(StandardCharsets.UTF_8));
 		}
 		out.write(SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
 	}
-
 }

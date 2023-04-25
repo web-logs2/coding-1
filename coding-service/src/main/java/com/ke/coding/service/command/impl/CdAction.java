@@ -1,4 +1,4 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
 
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
@@ -6,7 +6,7 @@ import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 import static com.ke.coding.api.enums.ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY;
 
 import com.ke.coding.api.dto.filesystem.Fd;
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
  * @time: 2023/3/7 10:38
  * @description:
  */
-@Service
 public class CdAction extends AbstractAction {
 
 	@SneakyThrows

@@ -1,11 +1,12 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
 
+import static com.ke.coding.api.enums.Constants.O_EXLOCK;
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.FILENAME_LENGTH_TOO_LONG;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
  * @time: 2023/3/7 10:38
  * @description:
  */
-@Service
 public class EchoAction extends AbstractAction {
 
 	Pattern p = Pattern.compile("\"(.*?)\"");
@@ -42,7 +42,6 @@ public class EchoAction extends AbstractAction {
 				String[] split = s[1].contains(">>") ? s[1].split(">>") : s[1].split(">");
 				data = split[0];
 				wholeFileName = split[1];
-
 			} else {
 				//有空格
 				data = s[1];
@@ -62,11 +61,12 @@ public class EchoAction extends AbstractAction {
 				wholeFileName = currentPath.equals(ROOT_PATH) ? currentPath + wholeFileName : currentPath + PATH_SPLIT + wholeFileName;
 			}
 
-			Fat16Fd fat16Fd = fileSystemService.open(wholeFileName);
+			Fat16Fd fat16Fd = fileSystemService.open(wholeFileName, O_EXLOCK);
 			if (fat16Fd.isEmpty()) {
 				fileSystemService.mkdir(wholeFileName, false);
 			}
 			out.write(buildData(data).getBytes(StandardCharsets.UTF_8));
+			fileSystemService.close(fat16Fd);
 		}
 	}
 

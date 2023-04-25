@@ -1,4 +1,4 @@
-package com.ke.coding.service.action;
+package com.ke.coding.service.command;
 
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 
@@ -19,6 +19,7 @@ import lombok.SneakyThrows;
 @Data
 public abstract class AbstractAction implements Action {
 
+	//todo：多用户路径控制
 	public static String currentPath = ROOT_PATH;
 
 	public FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();

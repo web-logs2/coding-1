@@ -1,9 +1,10 @@
 package com.ke.coding.service.stream.output;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
-import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
-import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
+import com.ke.coding.api.enums.ErrorCodeEnum;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
 
 /**
@@ -11,13 +12,13 @@ import lombok.SneakyThrows;
  * @time: 2023/4/6 17:37
  * @description:
  */
-public class Fat16xOutputStream extends AbstractFileOutputStream<Fat16Fd> {
+public class Fat16xAndResponseOutputStream extends Fat16xOutputStream {
 
-	FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();
+	private OutputStream output;
 
-
-	public Fat16xOutputStream(Fat16Fd fd) {
+	public Fat16xAndResponseOutputStream(Fat16Fd fd, OutputStream output) {
 		super(fd);
+		this.output = output;
 	}
 
 	@Override
@@ -33,6 +34,7 @@ public class Fat16xOutputStream extends AbstractFileOutputStream<Fat16Fd> {
 	@SneakyThrows
 	@Override
 	public void write(byte[] data) {
-		fileSystemService.writeFile(fd, data);
+		super.write(data);
+		output.write(ErrorCodeEnum.SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
 	}
 }

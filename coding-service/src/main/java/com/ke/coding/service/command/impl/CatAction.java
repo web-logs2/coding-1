@@ -1,12 +1,13 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
 
+import static com.ke.coding.api.enums.Constants.O_SHLOCK;
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ErrorCodeEnum;
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import com.ke.coding.service.stream.input.Fat16InputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,7 +32,7 @@ public class CatAction extends AbstractAction {
 		}
 		String fileName = s1[1];
 		String filePath = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		Fat16Fd fd = fileSystemService.open(filePath);
+		Fat16Fd fd = fileSystemService.open(filePath, O_SHLOCK);
 		if (fd.isEmpty()) {
 			err.write(ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
 			return;
@@ -45,6 +46,7 @@ public class CatAction extends AbstractAction {
 			out.write(temp);
 			read = inputStream.read(data);
 		}
+		fileSystemService.close(fd);
 	}
 
 }

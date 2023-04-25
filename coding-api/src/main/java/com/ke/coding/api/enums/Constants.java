@@ -53,4 +53,10 @@ public class Constants {
 	public static final int DATA_REGION_START = 289;
 	public static final int DATA_REGION_SIZE = 4194016;
 
+
+	public static final int O_EXLOCK = 1;
+	public static final int O_SHLOCK = 2;
+
+
+
 }

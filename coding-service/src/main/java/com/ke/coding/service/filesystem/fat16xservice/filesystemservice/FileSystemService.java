@@ -12,6 +12,8 @@ public interface FileSystemService<F extends Fd> {
 
 	F open(String fileName);
 
+	F open(String fileName, int state);
+
 	int readFile(F fd, byte[] data);
 
 	void writeFile(F fd, byte[] data);
@@ -21,5 +23,7 @@ public interface FileSystemService<F extends Fd> {
 	void mkdir(String filePath, boolean dir);
 
 	void close(F fd);
+
+	void rm(F fd);
 
 }

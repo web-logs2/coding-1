@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import jodd.io.FileUtil;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -18,7 +19,7 @@ public class FileDisk implements IDisk {
 
 	@SneakyThrows
 	public FileDisk() {
-		filePath = System.getProperty("filePath");
+		filePath = StringUtils.isEmpty(System.getProperty("filePath")) ? "123" : System.getProperty("filePath");
 		boolean existingFile = FileUtil.isExistingFile(new File(filePath));
 		if (!existingFile) {
 			new File(filePath).createNewFile();

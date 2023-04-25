@@ -1,8 +1,9 @@
-package com.ke.coding.service.cli.stdincli;
+package com.ke.coding.service.shell;
 
 import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.enums.ErrorCodeEnum;
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
+import com.ke.coding.service.command.CommandCenter;
 import java.io.InputStream;
 import java.util.Scanner;
 import lombok.SneakyThrows;

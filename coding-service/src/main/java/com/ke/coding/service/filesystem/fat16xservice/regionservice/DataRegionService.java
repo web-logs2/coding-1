@@ -42,6 +42,10 @@ public class DataRegionService {
 		}
 	}
 
+	public byte[] getClusterData(int index) {
+		return clusterService.getClusterData(index);
+	}
+
 
 	/**
 	 * 从集群尾保存数据，并返回所有的集群id； 如果文件的存储，应该直接从cluster头部存 目录存储: 当前cluster空间不满足时，最多跨一个cluster
@@ -74,6 +78,10 @@ public class DataRegionService {
 		for (int i = 0; i < fatArray.length; i++) {
 			clusterService.save(fatArray[i], list2Ary(partition.get(i)));
 		}
+	}
+
+	public void rmCluster(int index) {
+		clusterService.save(index, new byte[PER_CLUSTER_SECTOR * PER_SECTOR_BYTES]);
 	}
 
 	/**

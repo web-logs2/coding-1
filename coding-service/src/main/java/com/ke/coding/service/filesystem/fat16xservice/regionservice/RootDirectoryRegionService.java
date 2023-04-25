@@ -38,4 +38,13 @@ public class RootDirectoryRegionService {
 		disk.writeSector(ROOT_DIRECTORY_START + sectorIndex, bytes);
 	}
 
+	public void rm(RootDirectoryRegion rootDirectoryRegion, DirectoryEntry directoryEntry){
+		rootDirectoryRegion.getDirectoryEntries()[directoryEntry.getIndex()] = null;
+		int sectorIndex = (directoryEntry.getIndex() * DIRECTORY_ENTRY_SIZE) / disk.sectorSize();
+		int sectorDataSize = (directoryEntry.getIndex() * DIRECTORY_ENTRY_SIZE) % disk.sectorSize();
+		byte[] bytes = disk.readSector(ROOT_DIRECTORY_START + sectorIndex);
+		System.arraycopy(new byte[DIRECTORY_ENTRY_SIZE], 0, bytes, sectorDataSize, DIRECTORY_ENTRY_SIZE);
+		disk.writeSector(ROOT_DIRECTORY_START + sectorIndex, bytes);
+	}
+
 }

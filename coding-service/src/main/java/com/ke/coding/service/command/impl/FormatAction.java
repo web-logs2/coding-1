@@ -1,6 +1,6 @@
-package com.ke.coding.service.action.impl;
+package com.ke.coding.service.command.impl;
 
-import com.ke.coding.service.action.AbstractAction;
+import com.ke.coding.service.command.AbstractAction;
 import com.ke.coding.service.disk.FileDisk;
 import com.ke.coding.service.disk.IDisk;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
  * @time: 2023/3/7 10:38
  * @description:
  */
-@Service
 public class FormatAction extends AbstractAction {
 
 	IDisk iDisk = new FileDisk();

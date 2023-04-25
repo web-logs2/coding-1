@@ -12,6 +12,8 @@ import lombok.Data;
 @Data
 public class Fat16Fd extends Fd {
 
+	private String filePathName;
+
 	private DirectoryEntry directoryEntry;
 
 	@Override
@@ -25,8 +27,9 @@ public class Fat16Fd extends Fd {
 		this.directoryEntry = directoryEntry;
 	}
 
-	public Fat16Fd(DirectoryEntry directoryEntry) {
+	public Fat16Fd(DirectoryEntry directoryEntry, String filePathName) {
 		this.directoryEntry = directoryEntry;
+		this.filePathName = filePathName;
 	}
 
 	public Fat16Fd(int startingCluster) {
