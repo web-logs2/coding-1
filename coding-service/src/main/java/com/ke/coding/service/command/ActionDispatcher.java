@@ -4,12 +4,11 @@ import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.service.command.AbstractAction.currentPath;
 
-import com.baomidou.mybatisplus.extension.api.R;
-import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.command.impl.CatAction;
 import com.ke.coding.service.command.impl.CdAction;
+import com.ke.coding.service.command.impl.DefaultAction;
 import com.ke.coding.service.command.impl.EchoAction;
 import com.ke.coding.service.command.impl.FormatAction;
 import com.ke.coding.service.command.impl.LlAction;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,9 +39,6 @@ public class ActionDispatcher {
 	private OutputStream err;
 
 	private InputStream actionIn;
-
-	public ActionDispatcher() {
-	}
 
 	public ActionDispatcher(InputStream in, OutputStream out, OutputStream err) {
 		this.in = in;
@@ -67,8 +62,8 @@ public class ActionDispatcher {
 		return builder.toString();
 	}
 
-	public void run(CommandContext commandContext) {
-		AbstractAction action = null;
+	public void run() {
+		AbstractAction action;
 		String input = readIn(in);
 		actionIn = IOUtils.toInputStream(input);
 		String[] split = input.split(" ");
@@ -114,8 +109,9 @@ public class ActionDispatcher {
 				buildAction(action);
 				break;
 			default:
-				String[] s1 = commandContext.getOriginData().split(" ");
-				commandContext.setParams(Collections.singletonList(s1[1]));
+				action = new DefaultAction();
+				buildAction(action);
+				break;
 		}
 		action.run();
 	}

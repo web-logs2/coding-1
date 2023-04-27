@@ -29,9 +29,8 @@ public class MockShell {
 		actionDispatcher = new ActionDispatcher(in, out, err);
 		for (; ; ) {
 			if (in.available() > 0) {
-				CommandContext commandContext = new CommandContext();
 				try {
-					actionDispatcher.run(commandContext);
+					actionDispatcher.run();
 					out.write("\n".getBytes(StandardCharsets.UTF_8));
 					out.write(("root@xyl-shell:" + AbstractAction.currentPath + "$").getBytes(StandardCharsets.UTF_8));
 					out.flush();

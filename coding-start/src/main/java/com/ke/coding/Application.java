@@ -12,7 +12,7 @@ import org.apache.sshd.common.util.threads.ThreadUtils;
  */
 public class Application {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		ThreadUtils.newSingleThreadExecutor("sshServer").submit(() -> {
 			try {
 				new SimpleSshServer().start();
@@ -20,7 +20,7 @@ public class Application {
 				e.printStackTrace();
 			}
 		});
-
+		Thread.sleep(1000);
 		new LocalShell().start();
 
 	}

@@ -2,6 +2,7 @@ package com.ke.coding.service.ssh.server;
 
 import java.io.IOException;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
@@ -11,7 +12,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
  * @description:
  */
 
-
+@Slf4j
 public class SimpleSshServer implements Runnable{
 
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -36,12 +37,10 @@ public class SimpleSshServer implements Runnable{
 //			return new InvertedShellWrapper(shell);
 //		});
 		sshd.setCommandFactory((channel, command) -> {
-			System.out.println("Executing command: " + command);
 			return null;
 		});
 		sshd.start(); // 启动 SSHD 服务器
-
-		System.out.println("SSH server is up and running on port 2222...");
+		LOGGER.debug("SSH server is up and running on port 2222...");
 
 		// 保持服务器运行状态，直到手动停止
 		while (true) {

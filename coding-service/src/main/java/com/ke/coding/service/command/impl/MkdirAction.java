@@ -35,7 +35,7 @@ public class MkdirAction extends AbstractAction {
 			err.write(DIR_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 		}
 		try {
-			String filePathName = currentPath.equals(ROOT_PATH) ? currentPath : currentPath + newDir;
+			String filePathName = buildFilePathName(newDir);
 			Fat16Fd fd = fileSystemService.open(filePathName, O_EXLOCK);
 			if (fd == null || fd.isEmpty()){
 				fileSystemService.mkdir(filePathName, true);
