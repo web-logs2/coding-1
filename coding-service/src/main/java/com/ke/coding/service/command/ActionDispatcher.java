@@ -33,16 +33,16 @@ import org.apache.commons.lang3.StringUtils;
  * @time: 2023/3/6 18:18
  * @description:
  */
-public class CommandCenter {
+public class ActionDispatcher {
 
 	private InputStream in;
 	private OutputStream out;
 	private OutputStream err;
 
-	public CommandCenter() {
+	public ActionDispatcher() {
 	}
 
-	public CommandCenter(InputStream in, OutputStream out, OutputStream err) {
+	public ActionDispatcher(InputStream in, OutputStream out, OutputStream err) {
 		this.in = in;
 		this.out = out;
 		this.err = err;
@@ -108,6 +108,7 @@ public class CommandCenter {
 			case RM:
 				action = new RmAction();
 				buildAction(action);
+				break;
 			default:
 				String[] s1 = commandContext.getOriginData().split(" ");
 				commandContext.setParams(Collections.singletonList(s1[1]));

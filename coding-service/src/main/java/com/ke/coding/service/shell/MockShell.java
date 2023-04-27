@@ -3,7 +3,7 @@ package com.ke.coding.service.shell;
 import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.enums.ErrorCodeEnum;
 import com.ke.coding.service.command.AbstractAction;
-import com.ke.coding.service.command.CommandCenter;
+import com.ke.coding.service.command.ActionDispatcher;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,16 +23,16 @@ public class MockShell {
 	private OutputStream out;
 	private OutputStream err;
 
-	CommandCenter commandCenter;
+	ActionDispatcher actionDispatcher;
 
 	public void start() throws IOException {
-		commandCenter = new CommandCenter(in, out, err);
+		actionDispatcher = new ActionDispatcher(in, out, err);
 		for (; ; ) {
 			System.out.println("MockShell>> " + Thread.currentThread().getName() + in.available() + ((ChannelPipedInputStream)in).isOpen());
 			if (in.available() > 0) {
 				CommandContext commandContext = new CommandContext();
 				try {
-					commandCenter.run(commandContext);
+					actionDispatcher.run(commandContext);
 					out.write("\n".getBytes(StandardCharsets.UTF_8));
 					out.write(("root@xyl-shell:" + AbstractAction.currentPath + "$").getBytes(StandardCharsets.UTF_8));
 					out.flush();

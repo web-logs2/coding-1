@@ -3,7 +3,7 @@ package com.ke.coding.service.shell;
 import com.ke.coding.api.dto.cli.CommandContext;
 import com.ke.coding.api.enums.ErrorCodeEnum;
 import com.ke.coding.service.command.AbstractAction;
-import com.ke.coding.service.command.CommandCenter;
+import com.ke.coding.service.command.ActionDispatcher;
 import java.io.InputStream;
 import java.util.Scanner;
 import lombok.SneakyThrows;
@@ -18,7 +18,7 @@ public class LocalInputResolver {
 
 	private final Scanner sc = new Scanner(System.in);
 
-	CommandCenter commandCenter = new CommandCenter();
+	ActionDispatcher actionDispatcher = new ActionDispatcher();
 
 	@SneakyThrows
 	public void run() {
@@ -36,7 +36,7 @@ public class LocalInputResolver {
 				commandContext.setAction(action);
 				commandContext.setOriginData(input);
 				try {
-					commandCenter.run(commandContext);
+					actionDispatcher.run(commandContext);
 					System.out.println();
 					System.out.print("root@xyl-shell:" + AbstractAction.currentPath + "$");
 				} catch (Exception e) {
