@@ -47,10 +47,10 @@ public class Constants {
 	public static final int FAT_START = 1;
 	public static final int FAT_SIZE = 256;
 
-	public static final int ROOT_DIRECTORY_START = 257;
-	public static final int ROOT_DIRECTORY_SIZE = 32;
+	public static final int ROOT_DIRECTORY_START = 513;
+	public static final int ROOT_DIRECTORY_SIZE = 63;
 
-	public static final int DATA_REGION_START = 289;
+	public static final int DATA_REGION_START = 576;
 	public static final int DATA_REGION_SIZE = 4194016;
 
 

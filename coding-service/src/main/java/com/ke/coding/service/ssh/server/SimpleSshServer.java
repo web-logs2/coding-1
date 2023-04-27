@@ -1,6 +1,7 @@
 package com.ke.coding.service.ssh.server;
 
 import java.io.IOException;
+import lombok.SneakyThrows;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
@@ -11,7 +12,7 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
  */
 
 
-public class SimpleSshServer {
+public class SimpleSshServer implements Runnable{
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		new SimpleSshServer().start();
@@ -50,6 +51,12 @@ public class SimpleSshServer {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@SneakyThrows
+	@Override
+	public void run() {
+		start();
 	}
 }
 

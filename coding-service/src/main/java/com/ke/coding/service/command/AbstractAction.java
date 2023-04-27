@@ -1,5 +1,6 @@
 package com.ke.coding.service.command;
 
+import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
@@ -22,7 +23,7 @@ public abstract class AbstractAction implements Action {
 	//todo：多用户路径控制
 	public static String currentPath = ROOT_PATH;
 
-	public FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();
+	public static final FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();
 
 	protected InputStream in;
 
@@ -39,6 +40,18 @@ public abstract class AbstractAction implements Action {
 			result.write(buffer, 0, length);
 		}
 		return result.toByteArray();
+	}
+
+	public String buildFilePathName(String fileName) {
+		if (fileName.startsWith(ROOT_PATH)) {
+			return fileName;
+		}else {
+			if (currentPath.equals(ROOT_PATH)){
+				return currentPath + fileName;
+			}else {
+				return currentPath + PATH_SPLIT + fileName;
+			}
+		}
 	}
 
 }

@@ -74,8 +74,11 @@ public class HexByteUtil {
 		return result;
 	}
 
+
 	public static void main(String[] args) {
 		byte[] bytes = hexToByteArray("FFF8");
+		System.out.println(bytes);
+		bytes = hexToByteArray("EB");
 		System.out.println(bytes);
 	}
 }

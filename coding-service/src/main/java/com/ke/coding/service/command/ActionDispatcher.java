@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Collections;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -38,6 +39,8 @@ public class ActionDispatcher {
 	private InputStream in;
 	private OutputStream out;
 	private OutputStream err;
+
+	private InputStream actionIn;
 
 	public ActionDispatcher() {
 	}
@@ -67,6 +70,7 @@ public class ActionDispatcher {
 	public void run(CommandContext commandContext) {
 		AbstractAction action = null;
 		String input = readIn(in);
+		actionIn = IOUtils.toInputStream(input);
 		String[] split = input.split(" ");
 		switch (ActionTypeEnums.getByType(split[0])) {
 			case CAT:
@@ -134,7 +138,7 @@ public class ActionDispatcher {
 				redirectPath = currentPath.equals(ROOT_PATH) ? currentPath + redirectPath : currentPath + PATH_SPLIT + redirectPath;
 			}
 		}
-		action.setIn(in);
+		action.setIn(actionIn);
 		if (StringUtils.isNotBlank(redirectPath)) {
 			Fat16Fd open = fileSystemService.open(redirectPath);
 			if (open.isEmpty()) {
@@ -150,7 +154,7 @@ public class ActionDispatcher {
 	}
 
 	private void buildAction(AbstractAction action) {
-		action.setIn(in);
+		action.setIn(actionIn);
 		action.setOut(out);
 		action.setErr(err);
 	}

@@ -1,7 +1,9 @@
 package com.ke.coding;
 
+import com.ke.coding.service.shell.LocalShell;
 import com.ke.coding.service.ssh.server.SimpleSshServer;
 import java.io.IOException;
+import org.apache.sshd.common.util.threads.ThreadUtils;
 
 /**
  * 服务启动类
@@ -10,10 +12,16 @@ import java.io.IOException;
  */
 public class Application {
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		SimpleSshServer simpleSshServer = new SimpleSshServer();
-		simpleSshServer.start();
-//		LocalInputResolver resolver = new LocalInputResolver();
-//		resolver.run();
+	public static void main(String[] args) throws IOException {
+		ThreadUtils.newSingleThreadExecutor("sshServer").submit(() -> {
+			try {
+				new SimpleSshServer().start();
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		});
+
+		new LocalShell().start();
+
 	}
 }

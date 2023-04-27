@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import jodd.io.FileUtil;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,13 +19,10 @@ public class FileDisk implements IDisk {
 	private String filePath;
 
 	@SneakyThrows
-	public FileDisk() {
-		filePath = StringUtils.isEmpty(System.getProperty("filePath")) ? "123" : System.getProperty("filePath");
-		boolean existingFile = FileUtil.isExistingFile(new File(filePath));
-		if (!existingFile) {
-			new File(filePath).createNewFile();
-		}
+	public FileDisk(String filePath) {
+		this.filePath = filePath;
 	}
+
 
 	/**
 	 * 读取一个指定扇区的数据。

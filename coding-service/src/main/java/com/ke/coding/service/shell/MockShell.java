@@ -28,7 +28,6 @@ public class MockShell {
 	public void start() throws IOException {
 		actionDispatcher = new ActionDispatcher(in, out, err);
 		for (; ; ) {
-			System.out.println("MockShell>> " + Thread.currentThread().getName() + in.available() + ((ChannelPipedInputStream)in).isOpen());
 			if (in.available() > 0) {
 				CommandContext commandContext = new CommandContext();
 				try {
