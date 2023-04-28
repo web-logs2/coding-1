@@ -31,22 +31,28 @@ public class CatAction extends AbstractAction {
 			return;
 		}
 		String fileName = s1[1];
-		String filePath = currentPath.equals(ROOT_PATH) ? currentPath + fileName : currentPath + PATH_SPLIT + fileName;
-		Fat16Fd fd = fileSystemService.open(filePath, O_SHLOCK);
-		if (fd.isEmpty()) {
-			err.write(ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
-			return;
+		String filePath =
+			shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + fileName : shell.getCurrentPath() + PATH_SPLIT + fileName;
+		Fat16Fd fd = null;
+		try {
+			fd = fileSystemService.open(filePath, O_SHLOCK);
+			if (fd.isEmpty()) {
+				err.write(ErrorCodeEnum.NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
+				return;
+			}
+			InputStream inputStream = new Fat16InputStream(fd);
+			byte[] data = new byte[1024];
+			int read = inputStream.read(data);
+			while (-1 != read) {
+				byte[] temp = new byte[read];
+				System.arraycopy(data, 0, temp, 0, read);
+				out.write(temp);
+				read = inputStream.read(data);
+			}
+		} finally {
+				fileSystemService.close(fd);
 		}
-		InputStream inputStream = new Fat16InputStream(fd);
-		byte[] data = new byte[1024];
-		int read = inputStream.read(data);
-		while (-1 != read) {
-			byte[] temp = new byte[read];
-			System.arraycopy(data, 0, temp, 0, read);
-			out.write(temp);
-			read = inputStream.read(data);
-		}
-		fileSystemService.close(fd);
+
 	}
 
 }

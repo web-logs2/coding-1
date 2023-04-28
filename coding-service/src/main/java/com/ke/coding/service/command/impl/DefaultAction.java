@@ -22,7 +22,7 @@ public class DefaultAction extends AbstractAction {
 		byte[] bytes = readIn();
 		String s = new String(bytes);
 		if (!StringUtils.isBlank(s)) {
-			err.write(ErrorCodeEnum.ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
+			out.write(ErrorCodeEnum.ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
 		}
 	}
 }

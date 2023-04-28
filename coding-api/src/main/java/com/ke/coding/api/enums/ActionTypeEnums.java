@@ -10,17 +10,17 @@ import lombok.Setter;
  * @description:
  */
 public enum ActionTypeEnums {
-	LL("ll", "llAction"),
-	MKDIR("mkdir", "mkdirAction"),
-	TOUCH("touch", "touchAction"),
-	FORMAT("format", "formatAction"),
-	ECHO("echo", "echoAction"),
-	CAT("cat", "catAction"),
-	CD("cd", "cdAction"),
-	PWD("pwd", "pwdAction"),
-	RM("rm", "rmAction"),
-	CLEAR("clear", "clearAction"),
-	DEFAULT("default", "defaultAction"),
+	LL("ll", "LlAction"),
+	MKDIR("mkdir", "MkdirAction"),
+	TOUCH("touch", "TouchAction"),
+	FORMAT("format", "FormatAction"),
+	ECHO("echo", "EchoAction"),
+	CAT("cat", "CatAction"),
+	CD("cd", "CdAction"),
+	PWD("pwd", "PwdAction"),
+	RM("rm", "RmAction"),
+	CLEAR("clear", "ClearAction"),
+	DEFAULT("default", "DefaultAction"),
 
 	;
 

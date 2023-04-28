@@ -1,7 +1,6 @@
 package com.ke.coding.service.command.impl;
 
 import static com.ke.coding.api.enums.Constants.O_EXLOCK;
-import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 import static com.ke.coding.api.enums.ErrorCodeEnum.DIR_LENGTH_TOO_LONG;
 import static com.ke.coding.api.enums.ErrorCodeEnum.SYSTEM_SUCCESS;
@@ -27,6 +26,7 @@ public class TouchAction extends AbstractAction {
 		String[] s1 = originData.split(" ");
 		if (s1.length != 2) {
 			err.write(ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
+			return;
 		}
 
 		//step: 文件名，文件后缀长度限制
@@ -34,17 +34,20 @@ public class TouchAction extends AbstractAction {
 		if (newDir.length() > 8) {
 			err.write(DIR_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 		}
+		Fat16Fd fd = null;
 		try {
 			String filePathName = buildFilePathName(newDir);
-			Fat16Fd fd = fileSystemService.open(filePathName, O_EXLOCK);
-			if (fd == null || fd.isEmpty()){
+			fd = fileSystemService.open(filePathName, O_EXLOCK);
+			if (fd == null || fd.isEmpty()) {
 				fileSystemService.mkdir(filePathName, false);
 			}
-			fileSystemService.close(fd);
+			out.write(SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
 		} catch (CodingException e) {
 			err.write(e.getErrorCode().message().getBytes(StandardCharsets.UTF_8));
+		} finally {
+			fileSystemService.close(fd);
 		}
-		out.write(SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
+
 	}
 
 }

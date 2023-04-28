@@ -31,14 +31,14 @@ public class SimpleSshServer implements Runnable{
 			// 实现公钥认证逻辑
 			return true;
 		}); // 设置公钥认证器
-		sshd.setShellFactory(channel -> new MockShellWrapper());
+		sshd.setShellFactory(channel -> {
+			return new SshShellWrapper();
+		});
 //		sshd.setShellFactory(channel -> {
 //			InvertedShell shell = new ProcessShell("/bin/sh");
 //			return new InvertedShellWrapper(shell);
 //		});
-		sshd.setCommandFactory((channel, command) -> {
-			return null;
-		});
+		sshd.setCommandFactory((channel, command) -> null);
 		sshd.start(); // 启动 SSHD 服务器
 		LOGGER.debug("SSH server is up and running on port 2222...");
 

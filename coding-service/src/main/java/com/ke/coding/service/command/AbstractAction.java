@@ -6,6 +6,7 @@ import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
+import com.ke.coding.service.shell.LocalShell;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,9 +21,6 @@ import lombok.SneakyThrows;
 @Data
 public abstract class AbstractAction implements Action {
 
-	//todo：多用户路径控制
-	public static String currentPath = ROOT_PATH;
-
 	public static final FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();
 
 	protected InputStream in;
@@ -30,6 +28,8 @@ public abstract class AbstractAction implements Action {
 	protected OutputStream out;
 
 	protected OutputStream err;
+
+	protected LocalShell shell;
 
 	@SneakyThrows
 	public byte[] readIn() {
@@ -45,11 +45,11 @@ public abstract class AbstractAction implements Action {
 	public String buildFilePathName(String fileName) {
 		if (fileName.startsWith(ROOT_PATH)) {
 			return fileName;
-		}else {
-			if (currentPath.equals(ROOT_PATH)){
-				return currentPath + fileName;
-			}else {
-				return currentPath + PATH_SPLIT + fileName;
+		} else {
+			if (shell.getCurrentPath().equals(ROOT_PATH)) {
+				return shell.getCurrentPath() + fileName;
+			} else {
+				return shell.getCurrentPath() + PATH_SPLIT + fileName;
 			}
 		}
 	}

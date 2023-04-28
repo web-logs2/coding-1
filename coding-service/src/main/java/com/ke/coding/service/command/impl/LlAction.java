@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.fusesource.jansi.Ansi;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -24,20 +25,25 @@ public class LlAction extends AbstractAction {
 	@Override
 	public void run() {
 		List<DirectoryEntrySubInfo> result = new ArrayList<>();
-		Fat16Fd open = fileSystemService.open(currentPath, O_SHLOCK);
-		List<Fat16Fd> fdList = fileSystemService.list(open);
-		for (Fd fd : fdList) {
-			result.add(buildSubInfo(fd));
+		Fat16Fd open = null;
+		try {
+			open = fileSystemService.open(shell.getCurrentPath(), O_SHLOCK);
+			List<Fat16Fd> fdList = fileSystemService.list(open);
+			for (Fd fd : fdList) {
+				result.add(buildSubInfo(fd));
+			}
+			List<String> lines = new ArrayList<>();
+			for (DirectoryEntrySubInfo directoryEntrySubInfo : result) {
+				String sb = StringUtils.rightPad(directoryEntrySubInfo.getFileSize() + "", 10, " ")
+					+ StringUtils.rightPad(directoryEntrySubInfo.getAccessDate() + "", 14, " ")
+					+ directoryEntrySubInfo.getFileName();
+				lines.add(sb);
+			}
+			out.write(Joiner.on("\n"+Ansi.ansi().cursorLeft(100).toString()).join(lines).getBytes(StandardCharsets.UTF_8));
+			out.flush();
+		} finally {
+			fileSystemService.close(open);
 		}
-		List<String> lines = new ArrayList<>();
-		for (DirectoryEntrySubInfo directoryEntrySubInfo : result) {
-			String sb = StringUtils.rightPad(directoryEntrySubInfo.getFileSize() + "", 10, " ")
-				+ StringUtils.rightPad(directoryEntrySubInfo.getAccessDate() + "", 14, " ")
-				+ directoryEntrySubInfo.getFileName();
-			lines.add(sb);
-		}
-		out.write(Joiner.on("\n").join(lines).getBytes(StandardCharsets.UTF_8));
-		fileSystemService.close(open);
 	}
 
 	/**

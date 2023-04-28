@@ -2,28 +2,21 @@ package com.ke.coding.service.command;
 
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
-import static com.ke.coding.service.command.AbstractAction.currentPath;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ActionTypeEnums;
-import com.ke.coding.service.command.impl.CatAction;
-import com.ke.coding.service.command.impl.CdAction;
 import com.ke.coding.service.command.impl.DefaultAction;
 import com.ke.coding.service.command.impl.EchoAction;
 import com.ke.coding.service.command.impl.FormatAction;
-import com.ke.coding.service.command.impl.LlAction;
-import com.ke.coding.service.command.impl.MkdirAction;
-import com.ke.coding.service.command.impl.PwdAction;
-import com.ke.coding.service.command.impl.RmAction;
-import com.ke.coding.service.command.impl.TouchAction;
-import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
-import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
+import com.ke.coding.service.shell.LocalShell;
 import com.ke.coding.service.stream.output.Fat16xAndResponseOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,19 +27,20 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ActionDispatcher {
 
-	private InputStream in;
-	private OutputStream out;
-	private OutputStream err;
+	private final InputStream in;
+	private final OutputStream out;
+	private final OutputStream err;
 
 	private InputStream actionIn;
 
-	public ActionDispatcher(InputStream in, OutputStream out, OutputStream err) {
+	private final LocalShell shell;
+
+	public ActionDispatcher(InputStream in, OutputStream out, OutputStream err, LocalShell shell) {
 		this.in = in;
 		this.out = out;
 		this.err = err;
+		this.shell = shell;
 	}
-
-	public FileSystemService<Fat16Fd> fileSystemService = new Fat16xSystemServiceImpl();
 
 	private String readIn(InputStream in) {
 		StringBuilder builder = new StringBuilder();
@@ -62,29 +56,33 @@ public class ActionDispatcher {
 		return builder.toString();
 	}
 
+	@SneakyThrows
 	public void run() {
 		AbstractAction action;
 		String input = readIn(in);
 		actionIn = IOUtils.toInputStream(input);
 		String[] split = input.split(" ");
-		switch (ActionTypeEnums.getByType(split[0])) {
+		ActionTypeEnums actionTypeEnums = ActionTypeEnums.getByType(split[0]);
+		switch (actionTypeEnums) {
 			case CAT:
-				action = new CatAction();
-				buildRedirectAction(action, input);
-				break;
 			case LL:
-				action = new LlAction();
+				Class<?> cls = Class.forName("com.ke.coding.service.command.impl." + actionTypeEnums.getClazz());
+				Constructor<?> ctor = cls.getDeclaredConstructor();
+				action = (AbstractAction) ctor.newInstance();
 				buildRedirectAction(action, input);
 				break;
 			case FORMAT:
 				action = new FormatAction();
 				break;
 			case PWD:
-				action = new PwdAction();
-				buildAction(action);
-				break;
 			case CD:
-				action = new CdAction();
+			case MKDIR:
+			case TOUCH:
+			case RM:
+			case CLEAR:
+				cls = Class.forName("com.ke.coding.service.command.impl." + actionTypeEnums.getClazz());
+				ctor = cls.getDeclaredConstructor();
+				action = (AbstractAction) ctor.newInstance();
 				buildAction(action);
 				break;
 			case ECHO:
@@ -96,24 +94,13 @@ public class ActionDispatcher {
 					buildRedirectAction(action, input);
 				}
 				break;
-			case MKDIR:
-				action = new MkdirAction();
-				buildAction(action);
-				break;
-			case TOUCH:
-				action = new TouchAction();
-				buildAction(action);
-				break;
-			case RM:
-				action = new RmAction();
-				buildAction(action);
-				break;
 			default:
 				action = new DefaultAction();
 				buildAction(action);
 				break;
 		}
 		action.run();
+		out.flush();
 	}
 
 	private void buildRedirectAction(AbstractAction action, String input) {
@@ -131,15 +118,16 @@ public class ActionDispatcher {
 				redirectPath = redirectPath.substring(1);
 			}
 			if (!redirectPath.startsWith("/")) {
-				redirectPath = currentPath.equals(ROOT_PATH) ? currentPath + redirectPath : currentPath + PATH_SPLIT + redirectPath;
+				redirectPath = shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + redirectPath
+					: shell.getCurrentPath() + PATH_SPLIT + redirectPath;
 			}
 		}
 		action.setIn(actionIn);
 		if (StringUtils.isNotBlank(redirectPath)) {
-			Fat16Fd open = fileSystemService.open(redirectPath);
+			Fat16Fd open = AbstractAction.fileSystemService.open(redirectPath);
 			if (open.isEmpty()) {
-				fileSystemService.mkdir(redirectPath, false);
-				open = fileSystemService.open(redirectPath);
+				AbstractAction.fileSystemService.mkdir(redirectPath, false);
+				open = AbstractAction.fileSystemService.open(redirectPath);
 			}
 			action.setOut(new Fat16xAndResponseOutputStream(open, out));
 		} else {
@@ -147,12 +135,14 @@ public class ActionDispatcher {
 		}
 
 		action.setErr(err);
+		action.setShell(shell);
 	}
 
 	private void buildAction(AbstractAction action) {
 		action.setIn(actionIn);
 		action.setOut(out);
 		action.setErr(err);
+		action.setShell(shell);
 	}
 
 

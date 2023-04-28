@@ -2,6 +2,7 @@ package com.ke.coding.api.dto.filesystem.fat16x;
 
 import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.api.dto.filesystem.fat16x.directoryregion.DirectoryEntry;
+import java.io.Closeable;
 import lombok.Data;
 
 /**
@@ -36,4 +37,9 @@ public class Fat16Fd extends Fd {
 		directoryEntry = new DirectoryEntry();
 		directoryEntry.setStartingCluster(startingCluster);
 	}
+
+	public Fat16Fd(String filePathName) {
+		this.filePathName = filePathName;
+	}
+
 }

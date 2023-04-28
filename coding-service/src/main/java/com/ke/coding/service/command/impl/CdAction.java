@@ -9,7 +9,6 @@ import com.ke.coding.api.dto.filesystem.Fd;
 import com.ke.coding.service.command.AbstractAction;
 import java.nio.charset.StandardCharsets;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -30,25 +29,26 @@ public class CdAction extends AbstractAction {
 		String cdPath = s1[1];
 		if (cdPath.contains("..")) {
 			String[] cdPathSplit = cdPath.split(PATH_SPLIT);
-			String[] currentPathSplit = currentPath.split(PATH_SPLIT);
+			String[] currentPathSplit = shell.getCurrentPath().split(PATH_SPLIT);
 
 			String result = "";
 			for (int i = 0; i < currentPathSplit.length - cdPathSplit.length; i++) {
 				result = ROOT_PATH + currentPathSplit[i];
 			}
-			currentPath = result;
+			shell.updateCurrentPath(result);
 			out.write(result.getBytes(StandardCharsets.UTF_8));
 		} else if (cdPath.equals(ROOT_PATH)) {
+			shell.updateCurrentPath(ROOT_PATH);
 			out.write(ROOT_PATH.getBytes(StandardCharsets.UTF_8));
 		} else {
 			if (!cdPath.startsWith(PATH_SPLIT)) {
-				cdPath = currentPath.equals(ROOT_PATH) ? currentPath + cdPath : currentPath + PATH_SPLIT + cdPath;
+				cdPath = shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + cdPath : shell.getCurrentPath() + PATH_SPLIT + cdPath;
 			}
 			Fd open = fileSystemService.open(cdPath);
 			if (open.isEmpty()) {
 				err.write(NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
 			} else {
-				currentPath = cdPath;
+				shell.updateCurrentPath(cdPath);
 				out.write(cdPath.getBytes(StandardCharsets.UTF_8));
 			}
 		}

@@ -2,8 +2,6 @@ package com.ke.coding.service.command.impl;
 
 import static com.ke.coding.api.enums.Constants.ATTRIBUTE_DIRECTORY_POS;
 import static com.ke.coding.api.enums.Constants.O_EXLOCK;
-import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
-import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 import static com.ke.coding.api.enums.ErrorCodeEnum.SYSTEM_SUCCESS;
 
@@ -33,18 +31,21 @@ public class RmAction extends AbstractAction {
 		//step: 文件名，文件后缀长度限制
 		String delDir = s1[1];
 		String filePathName = buildFilePathName(delDir);
+		Fat16Fd fd = null;
 		try {
-			Fat16Fd fd = fileSystemService.open(filePathName, O_EXLOCK);
+			fd = fileSystemService.open(filePathName, O_EXLOCK);
 			if (fd != null && !fd.isEmpty()) {
 				//文件or空目录
 				if (1 != fd.getDirectoryEntry().getAttribute(ATTRIBUTE_DIRECTORY_POS) || fd.getDirectoryEntry().getStartingCluster() != 0) {
 					fileSystemService.rm(fd);
 				}
 			}
-			fileSystemService.close(fd);
+			out.write(SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
 		} catch (CodingException e) {
 			err.write(e.getErrorCode().message().getBytes(StandardCharsets.UTF_8));
+		} finally {
+			fileSystemService.close(fd);
 		}
-		out.write(SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
+
 	}
 }

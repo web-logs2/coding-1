@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -58,15 +57,21 @@ public class EchoAction extends AbstractAction {
 				err.write(FILENAME_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
 			}
 			if (!wholeFileName.startsWith("/")) {
-				wholeFileName = currentPath.equals(ROOT_PATH) ? currentPath + wholeFileName : currentPath + PATH_SPLIT + wholeFileName;
+				wholeFileName = shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + wholeFileName
+					: shell.getCurrentPath() + PATH_SPLIT + wholeFileName;
+			}
+			Fat16Fd fat16Fd= null;
+			try{
+				fat16Fd = fileSystemService.open(wholeFileName, O_EXLOCK);
+				if (fat16Fd.isEmpty()) {
+					fileSystemService.mkdir(wholeFileName, false);
+				}
+				out.write(buildData(data).getBytes(StandardCharsets.UTF_8));
+			}finally {
+				fileSystemService.close(fat16Fd);
 			}
 
-			Fat16Fd fat16Fd = fileSystemService.open(wholeFileName, O_EXLOCK);
-			if (fat16Fd.isEmpty()) {
-				fileSystemService.mkdir(wholeFileName, false);
-			}
-			out.write(buildData(data).getBytes(StandardCharsets.UTF_8));
-			fileSystemService.close(fat16Fd);
+
 		}
 	}
 
