@@ -54,7 +54,6 @@ public class LocalShell {
 		}
 	}
 
-
 	public String getCurrentPath() {
 		return USER_PATH.getOrDefault(currentUser, ROOT_PATH);
 	}
@@ -62,8 +61,6 @@ public class LocalShell {
 	public void updateCurrentPath(String path) {
 		USER_PATH.put(currentUser, path);
 	}
-
-
 
 	protected void userLine(OutputStream out) throws IOException {
 		out.write(
