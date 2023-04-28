@@ -1,13 +1,6 @@
 package com.ke.coding.service.ssh.server;
 
-/**
- * @author: xueyunlong001@ke.com
- * @time: 2023/4/24 10:46
- * @description:
- */
-
 import static com.ke.coding.common.ShellUtil.newLine;
-
 import com.ke.coding.service.shell.SshShell;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +17,11 @@ import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.session.ServerSessionAware;
 
+/**
+ * @author: xueyunlong001@ke.com
+ * @time: 2023/4/24 10:46
+ * @description:
+ */
 public class SshShellWrapper extends AbstractLoggingBean implements Command, ServerSessionAware {
 
 	private InputStream in;
@@ -31,7 +29,7 @@ public class SshShellWrapper extends AbstractLoggingBean implements Command, Ser
 	private OutputStream err;
 	private ExitCallback callback;
 	private ServerSession session;
-	private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 	@Override
 	public void start(ChannelSession channel, Environment env) throws IOException {

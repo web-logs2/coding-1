@@ -1,7 +1,7 @@
 package com.ke.coding;
 
 import com.ke.coding.service.shell.LocalShell;
-import com.ke.coding.service.ssh.server.SimpleSshServer;
+import com.ke.coding.service.ssh.server.SshServer;
 import java.io.IOException;
 import org.apache.sshd.common.util.threads.ThreadUtils;
 
@@ -15,7 +15,7 @@ public class Application {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		ThreadUtils.newSingleThreadExecutor("sshServer").submit(() -> {
 			try {
-				new SimpleSshServer().start();
+				new SshServer().start();
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -3,7 +3,6 @@ package com.ke.coding.service.ssh.server;
 import java.io.IOException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
 
 /**
@@ -13,27 +12,17 @@ import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
  */
 
 @Slf4j
-public class SimpleSshServer implements Runnable{
+public class SshServer implements Runnable{
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		new SimpleSshServer().start();
+		new SshServer().start();
 	}
-
 	public void start() throws IOException, InterruptedException {
-		SshServer sshd = SshServer.setUpDefaultServer();
+		org.apache.sshd.server.SshServer sshd = org.apache.sshd.server.SshServer.setUpDefaultServer();
 		sshd.setPort(2222);
-		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider()); // 设置主机密钥生成器
-		sshd.setPasswordAuthenticator((username, password, session) -> {
-			// 实现密码认证逻辑
-			return true;
-		}); // 设置密码认证器
-		sshd.setPublickeyAuthenticator((username, key, session) -> {
-			// 实现公钥认证逻辑
-			return true;
-		}); // 设置公钥认证器
-		sshd.setShellFactory(channel -> {
-			return new SshShellWrapper();
-		});
+		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
+		sshd.setPasswordAuthenticator((username, password, session) -> username.equals(password));
+		sshd.setShellFactory(channel -> new SshShellWrapper());
 //		sshd.setShellFactory(channel -> {
 //			InvertedShell shell = new ProcessShell("/bin/sh");
 //			return new InvertedShellWrapper(shell);
