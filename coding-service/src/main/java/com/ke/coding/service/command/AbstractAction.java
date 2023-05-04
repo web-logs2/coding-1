@@ -6,7 +6,7 @@ import static com.ke.coding.api.enums.Constants.ROOT_PATH;
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.Fat16xSystemServiceImpl;
 import com.ke.coding.service.filesystem.fat16xservice.filesystemservice.FileSystemService;
-import com.ke.coding.service.shell.LocalShell;
+import com.ke.coding.service.shell.AbstractShell;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,7 +29,7 @@ public abstract class AbstractAction implements Action {
 
 	protected OutputStream err;
 
-	protected LocalShell shell;
+	protected AbstractShell abstractShell;
 
 	@SneakyThrows
 	public byte[] readIn() {
@@ -46,10 +46,10 @@ public abstract class AbstractAction implements Action {
 		if (fileName.startsWith(ROOT_PATH)) {
 			return fileName;
 		} else {
-			if (shell.getCurrentPath().equals(ROOT_PATH)) {
-				return shell.getCurrentPath() + fileName;
+			if (abstractShell.getCurrentPath().equals(ROOT_PATH)) {
+				return abstractShell.getCurrentPath() + fileName;
 			} else {
-				return shell.getCurrentPath() + PATH_SPLIT + fileName;
+				return abstractShell.getCurrentPath() + PATH_SPLIT + fileName;
 			}
 		}
 	}

@@ -30,7 +30,7 @@ public class LlAction extends AbstractAction {
 			byte[] input = readIn();
 			String originData = new String(input);
 			String[] s1 = originData.split(" ");
-			String llPath = shell.getCurrentPath();
+			String llPath = abstractShell.getCurrentPath();
 			if (s1.length == 2){
 				llPath = s1[1];
 			}

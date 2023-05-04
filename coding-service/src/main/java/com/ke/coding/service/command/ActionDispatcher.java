@@ -7,7 +7,7 @@ import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.command.impl.DefaultAction;
 import com.ke.coding.service.command.impl.EchoAction;
-import com.ke.coding.service.shell.LocalShell;
+import com.ke.coding.service.shell.AbstractShell;
 import com.ke.coding.service.stream.output.Fat16xAndResponseOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,13 +32,13 @@ public class ActionDispatcher {
 
 	private InputStream actionIn;
 
-	private final LocalShell shell;
+	private final AbstractShell abstractShell;
 
-	public ActionDispatcher(InputStream in, OutputStream out, OutputStream err, LocalShell shell) {
+	public ActionDispatcher(InputStream in, OutputStream out, OutputStream err, AbstractShell abstractShell) {
 		this.in = in;
 		this.out = out;
 		this.err = err;
-		this.shell = shell;
+		this.abstractShell = abstractShell;
 	}
 
 	private String readIn(InputStream in) {
@@ -115,8 +115,8 @@ public class ActionDispatcher {
 				redirectPath = redirectPath.substring(1);
 			}
 			if (!redirectPath.startsWith("/")) {
-				redirectPath = shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + redirectPath
-					: shell.getCurrentPath() + PATH_SPLIT + redirectPath;
+				redirectPath = abstractShell.getCurrentPath().equals(ROOT_PATH) ? abstractShell.getCurrentPath() + redirectPath
+					: abstractShell.getCurrentPath() + PATH_SPLIT + redirectPath;
 			}
 		}
 		action.setIn(actionIn);
@@ -128,14 +128,14 @@ public class ActionDispatcher {
 		}
 
 		action.setErr(err);
-		action.setShell(shell);
+		action.setAbstractShell(abstractShell);
 	}
 
 	private void buildAction(AbstractAction action) {
 		action.setIn(actionIn);
 		action.setOut(out);
 		action.setErr(err);
-		action.setShell(shell);
+		action.setAbstractShell(abstractShell);
 	}
 
 

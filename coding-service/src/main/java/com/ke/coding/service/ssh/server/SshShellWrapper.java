@@ -1,6 +1,7 @@
 package com.ke.coding.service.ssh.server;
 
 import static com.ke.coding.common.ShellUtil.newLine;
+
 import com.ke.coding.service.shell.SshShell;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,7 +60,6 @@ public class SshShellWrapper extends AbstractLoggingBean implements Command, Ser
 				if (read == '\r') {
 					try {
 						if ("exit".equals(buffer.toString())) {
-
 							destroy(channel);
 						} else {
 							shell.setIn(new ByteArrayInputStream(buffer.toByteArray()));

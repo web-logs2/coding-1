@@ -17,6 +17,6 @@ public class PwdAction extends AbstractAction {
 	@SneakyThrows
 	@Override
 	public void run() {
-		out.write(shell.getCurrentPath().getBytes(StandardCharsets.UTF_8));
+		out.write(abstractShell.getCurrentPath().getBytes(StandardCharsets.UTF_8));
 	}
 }

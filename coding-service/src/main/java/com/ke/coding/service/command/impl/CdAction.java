@@ -33,25 +33,25 @@ public class CdAction extends AbstractAction {
 		String cdPath = handleCdPath(s1[1]);
 		if (cdPath.contains("..")) {
 			String[] cdPathSplit = cdPath.split(PATH_SPLIT);
-			ArrayList<String> currentPathSplit = Lists.newArrayList(shell.getCurrentPath().split(PATH_SPLIT));
+			ArrayList<String> currentPathSplit = Lists.newArrayList(abstractShell.getCurrentPath().split(PATH_SPLIT));
 			currentPathSplit.remove("");
 			String result = ROOT_PATH;
 			List<String> subList = currentPathSplit.subList(0, currentPathSplit.size() - cdPathSplit.length);
 			result += Joiner.on(PATH_SPLIT).join(subList);
-			shell.updateCurrentPath(result);
+			abstractShell.updateCurrentPath(result);
 			out.write(result.getBytes(StandardCharsets.UTF_8));
 		} else if (cdPath.equals(ROOT_PATH)) {
-			shell.updateCurrentPath(ROOT_PATH);
+			abstractShell.updateCurrentPath(ROOT_PATH);
 			out.write(ROOT_PATH.getBytes(StandardCharsets.UTF_8));
 		} else {
 			if (!cdPath.startsWith(PATH_SPLIT)) {
-				cdPath = shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + cdPath : shell.getCurrentPath() + PATH_SPLIT + cdPath;
+				cdPath = abstractShell.getCurrentPath().equals(ROOT_PATH) ? abstractShell.getCurrentPath() + cdPath : abstractShell.getCurrentPath() + PATH_SPLIT + cdPath;
 			}
 			Fd open = fileSystemService.open(cdPath);
 			if (open.isEmpty()) {
 				err.write(NO_SUCH_FILE_OR_DIRECTORY.message().getBytes(StandardCharsets.UTF_8));
 			} else {
-				shell.updateCurrentPath(cdPath);
+				abstractShell.updateCurrentPath(cdPath);
 				out.write(cdPath.getBytes(StandardCharsets.UTF_8));
 			}
 		}

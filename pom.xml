@@ -26,7 +26,6 @@
 
 	<modules>
 		<module>coding-api</module>
-		<module>coding-dao</module>
 		<module>coding-service</module>
 		<module>coding-start</module>
     <module>coding-common</module>

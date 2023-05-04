@@ -23,6 +23,6 @@ public class FormatAction extends AbstractAction {
 	public void run() {
 		fileSystemService.format();
 		out.write(ErrorCodeEnum.SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
-		shell.updateCurrentPath(ROOT_PATH);
+		abstractShell.updateCurrentPath(ROOT_PATH);
 	}
 }

@@ -3,7 +3,6 @@ package com.ke.coding.service.command.impl;
 import static com.ke.coding.api.enums.Constants.O_SHLOCK;
 import static com.ke.coding.api.enums.Constants.PATH_SPLIT;
 import static com.ke.coding.api.enums.Constants.ROOT_PATH;
-import static com.ke.coding.api.enums.ErrorCodeEnum.ACTION_ERROR;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ErrorCodeEnum;
@@ -53,7 +52,7 @@ public class CatAction extends AbstractAction {
 		if (fileName.startsWith(ROOT_PATH)) {
 			return fileName;
 		} else {
-			return shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + fileName : shell.getCurrentPath() + PATH_SPLIT + fileName;
+			return abstractShell.getCurrentPath().equals(ROOT_PATH) ? abstractShell.getCurrentPath() + fileName : abstractShell.getCurrentPath() + PATH_SPLIT + fileName;
 		}
 	}
 

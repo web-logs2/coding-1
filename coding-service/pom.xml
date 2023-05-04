@@ -18,11 +18,6 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.ke.coding</groupId>
-            <artifactId>coding-dao</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
             <scope>provided</scope>
@@ -34,8 +29,8 @@
         </dependency>
 
 <!--        <dependency>-->
-<!--            <groupId>org.springframework.shell</groupId>-->
-<!--            <artifactId>spring-shell-starter</artifactId>-->
+<!--            <groupId>org.springframework.abstractShell</groupId>-->
+<!--            <artifactId>spring-abstractShell-starter</artifactId>-->
 <!--            <version>2.0.0.RELEASE</version>-->
 <!--        </dependency>-->
         <dependency>

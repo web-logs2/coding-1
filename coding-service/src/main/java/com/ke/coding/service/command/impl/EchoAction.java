@@ -47,8 +47,8 @@ public class EchoAction extends AbstractAction {
 				wholeFileName = s[3];
 			}
 			if (!wholeFileName.startsWith("/")) {
-				wholeFileName = shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + wholeFileName
-					: shell.getCurrentPath() + PATH_SPLIT + wholeFileName;
+				wholeFileName = abstractShell.getCurrentPath().equals(ROOT_PATH) ? abstractShell.getCurrentPath() + wholeFileName
+					: abstractShell.getCurrentPath() + PATH_SPLIT + wholeFileName;
 			}
 			Fat16Fd fat16Fd = null;
 			try {
