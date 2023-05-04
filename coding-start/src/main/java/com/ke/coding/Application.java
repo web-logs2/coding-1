@@ -21,7 +21,7 @@ public class Application {
 			}
 		});
 		Thread.sleep(1000);
-		new LocalShell(System.in, System.out, System.out).start();
+		new LocalShell(System.in, System.out, System.err).start();
 
 	}
 }
