@@ -17,6 +17,8 @@ import org.apache.sshd.server.channel.ChannelSession;
 import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.session.ServerSessionAware;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Erase;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -57,6 +59,7 @@ public class SshShellWrapper extends AbstractLoggingBean implements Command, Ser
 		for (; ; ) {
 			if (in.available() > 0) {
 				byte read = (byte) in.read();
+				//回车
 				if (read == '\r') {
 					try {
 						if ("exit".equals(buffer.toString())) {
@@ -67,6 +70,15 @@ public class SshShellWrapper extends AbstractLoggingBean implements Command, Ser
 						}
 					} finally {
 						buffer.reset();
+					}
+					//回退
+				}else if (read == 127) {
+					if (buffer.size() > 0){
+						byte[] bytes = buffer.toByteArray();
+						buffer.reset();
+						buffer.write(bytes, 0, bytes.length - 1);
+						shell.echo(Ansi.ansi().cursorLeft(1).a(" ").toString().getBytes(StandardCharsets.UTF_8));
+						shell.echo((byte) 0x08);
 					}
 				} else {
 					buffer.write(read);

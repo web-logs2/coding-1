@@ -22,6 +22,11 @@ public class SshShell extends AbstractShell {
 		out.flush();
 	}
 
+	public void echo(byte[] b) throws IOException {
+		out.write(b);
+		out.flush();
+	}
+
 	@Override
 	public void beforeRun() throws IOException {
 		newLine(out);
