@@ -1,13 +1,10 @@
 package com.ke.coding.service.disk;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import jodd.io.FileUtil;
-import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -16,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FileDisk implements IDisk {
 
-	private String filePath;
+	private final String filePath;
 
 	@SneakyThrows
 	public FileDisk(String filePath) {
@@ -92,16 +89,6 @@ public class FileDisk implements IDisk {
 		try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "rw")) {
 			randomAccessFile.seek((long) sectorIdx * sectorSize() + beginIndex);
 			randomAccessFile.write(sectorData);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void format() {
-		try (FileWriter fileWriter = new FileWriter(filePath)) {
-			fileWriter.write("");
-			fileWriter.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -2,6 +2,7 @@ package com.ke.coding.service.stream.output;
 
 import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ErrorCodeEnum;
+import com.ke.coding.service.command.AbstractAction;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +35,10 @@ public class Fat16xAndResponseOutputStream extends Fat16xOutputStream {
 	@SneakyThrows
 	@Override
 	public void write(byte[] data) {
+		if (fd.isEmpty()) {
+			AbstractAction.fileSystemService.mkdir(fd.getFilePathName(), false);
+			fd = AbstractAction.fileSystemService.open(fd.getFilePathName());
+		}
 		super.write(data);
 		output.write(ErrorCodeEnum.SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
 	}

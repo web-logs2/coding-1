@@ -1,10 +1,11 @@
 package com.ke.coding.service.command.impl;
 
+import static com.ke.coding.api.enums.Constants.ROOT_PATH;
+
+import com.ke.coding.api.enums.ErrorCodeEnum;
 import com.ke.coding.service.command.AbstractAction;
-import com.ke.coding.service.disk.FileDisk;
-import com.ke.coding.service.disk.IDisk;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+import java.nio.charset.StandardCharsets;
+import lombok.SneakyThrows;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -13,14 +14,15 @@ import org.springframework.stereotype.Service;
  */
 public class FormatAction extends AbstractAction {
 
-	IDisk iDisk;
-
 	/**
 	 * 运行
 	 */
 	@Override
+	@SneakyThrows
+
 	public void run() {
-		iDisk = new FileDisk(StringUtils.isEmpty(System.getProperty("filePath")) ? "123" : System.getProperty("filePath"));
-		iDisk.format();
+		fileSystemService.format();
+		out.write(ErrorCodeEnum.SYSTEM_SUCCESS.message().getBytes(StandardCharsets.UTF_8));
+		shell.updateCurrentPath(ROOT_PATH);
 	}
 }

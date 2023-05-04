@@ -7,7 +7,6 @@ import com.ke.coding.api.dto.filesystem.fat16x.Fat16Fd;
 import com.ke.coding.api.enums.ActionTypeEnums;
 import com.ke.coding.service.command.impl.DefaultAction;
 import com.ke.coding.service.command.impl.EchoAction;
-import com.ke.coding.service.command.impl.FormatAction;
 import com.ke.coding.service.shell.LocalShell;
 import com.ke.coding.service.stream.output.Fat16xAndResponseOutputStream;
 import java.io.BufferedReader;
@@ -72,8 +71,6 @@ public class ActionDispatcher {
 				buildRedirectAction(action, input);
 				break;
 			case FORMAT:
-				action = new FormatAction();
-				break;
 			case PWD:
 			case CD:
 			case MKDIR:
@@ -125,10 +122,6 @@ public class ActionDispatcher {
 		action.setIn(actionIn);
 		if (StringUtils.isNotBlank(redirectPath)) {
 			Fat16Fd open = AbstractAction.fileSystemService.open(redirectPath);
-			if (open.isEmpty()) {
-				AbstractAction.fileSystemService.mkdir(redirectPath, false);
-				open = AbstractAction.fileSystemService.open(redirectPath);
-			}
 			action.setOut(new Fat16xAndResponseOutputStream(open, out));
 		} else {
 			action.setOut(out);

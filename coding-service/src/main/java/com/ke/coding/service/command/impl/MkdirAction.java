@@ -30,9 +30,6 @@ public class MkdirAction extends AbstractAction {
 
 		//step: 文件名，文件后缀长度限制
 		String newDir = s1[1];
-		if (newDir.length() > 8) {
-			err.write(DIR_LENGTH_TOO_LONG.message().getBytes(StandardCharsets.UTF_8));
-		}
 		Fat16Fd fd = null;
 		try {
 			String filePathName = buildFilePathName(newDir);

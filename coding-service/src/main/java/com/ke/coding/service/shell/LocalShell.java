@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Data;
-import org.fusesource.jansi.Ansi;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -40,16 +39,15 @@ public class LocalShell {
 		setCurrentUser("xyl-local");
 		System.out.print("xyl-local@xyl-shell:/$");
 		for (; ; ) {
-			if (in.available() > 0) {
-				new ActionDispatcher(in, out, err, this).run();
-				newLine(out);
-				userLine(out);
-			}
 			try {
+				if (in.available() > 0) {
+					new ActionDispatcher(in, out, err, this).run();
+					newLine(out);
+					userLine(out);
+				}
 				Thread.sleep(100);
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-				break;
 			}
 		}
 	}

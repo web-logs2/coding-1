@@ -30,11 +30,6 @@ public class Fat16xFileSystem {
 	 */
 	private RootDirectoryRegion rootDirectoryRegion;
 
-	/**
-	 * 数据区域
-	 */
-	private DataRegion dataRegion;
-
 
 	public Fat16xFileSystem() {
 	}
@@ -42,6 +37,5 @@ public class Fat16xFileSystem {
 	public void format(){
 		fatRegion.format();
 		rootDirectoryRegion.format();
-		dataRegion.format();
 	}
 }

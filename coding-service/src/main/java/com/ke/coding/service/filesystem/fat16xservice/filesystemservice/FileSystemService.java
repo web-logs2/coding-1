@@ -26,4 +26,6 @@ public interface FileSystemService<F extends Fd> {
 
 	void rm(F fd);
 
+	void format();
+
 }
