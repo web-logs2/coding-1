@@ -30,7 +30,7 @@ public class CdAction extends AbstractAction {
 		if (s1.length != 2) {
 			err.write(ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
 		}
-		String cdPath = s1[1].endsWith(PATH_SPLIT) ? s1[1].substring(0, s1[1].length() - 1) : s1[1];
+		String cdPath = handleCdPath(s1[1]);
 		if (cdPath.contains("..")) {
 			String[] cdPathSplit = cdPath.split(PATH_SPLIT);
 			ArrayList<String> currentPathSplit = Lists.newArrayList(shell.getCurrentPath().split(PATH_SPLIT));
@@ -55,6 +55,13 @@ public class CdAction extends AbstractAction {
 				out.write(cdPath.getBytes(StandardCharsets.UTF_8));
 			}
 		}
+	}
 
+	String handleCdPath(String path){
+		if (path.equals(ROOT_PATH)){
+			return ROOT_PATH;
+		}else {
+			return path.endsWith(PATH_SPLIT) ? path.substring(0, path.length() - 1) : path;
+		}
 	}
 }

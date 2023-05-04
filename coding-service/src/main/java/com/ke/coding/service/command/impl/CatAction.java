@@ -26,13 +26,8 @@ public class CatAction extends AbstractAction {
 		byte[] input = readIn();
 		String originData = new String(input);
 		String[] s1 = originData.split(" ");
-		if (s1.length != 2) {
-			err.write(ACTION_ERROR.message().getBytes(StandardCharsets.UTF_8));
-			return;
-		}
 		String fileName = s1[1];
-		String filePath =
-			shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + fileName : shell.getCurrentPath() + PATH_SPLIT + fileName;
+		String filePath = handleFilePath(fileName);
 		Fat16Fd fd = null;
 		try {
 			fd = fileSystemService.open(filePath, O_SHLOCK);
@@ -50,9 +45,16 @@ public class CatAction extends AbstractAction {
 				read = inputStream.read(data);
 			}
 		} finally {
-				fileSystemService.close(fd);
+			fileSystemService.close(fd);
 		}
+	}
 
+	String handleFilePath(String fileName) {
+		if (fileName.startsWith(ROOT_PATH)) {
+			return fileName;
+		} else {
+			return shell.getCurrentPath().equals(ROOT_PATH) ? shell.getCurrentPath() + fileName : shell.getCurrentPath() + PATH_SPLIT + fileName;
+		}
 	}
 
 }

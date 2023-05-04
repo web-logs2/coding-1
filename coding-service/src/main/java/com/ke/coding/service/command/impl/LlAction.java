@@ -27,7 +27,14 @@ public class LlAction extends AbstractAction {
 		List<DirectoryEntrySubInfo> result = new ArrayList<>();
 		Fat16Fd open = null;
 		try {
-			open = fileSystemService.open(shell.getCurrentPath(), O_SHLOCK);
+			byte[] input = readIn();
+			String originData = new String(input);
+			String[] s1 = originData.split(" ");
+			String llPath = shell.getCurrentPath();
+			if (s1.length == 2){
+				llPath = s1[1];
+			}
+			open = fileSystemService.open(llPath, O_SHLOCK);
 			List<Fat16Fd> fdList = fileSystemService.list(open);
 			for (Fd fd : fdList) {
 				result.add(buildSubInfo(fd));
