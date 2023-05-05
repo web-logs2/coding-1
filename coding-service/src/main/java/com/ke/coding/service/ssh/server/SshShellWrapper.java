@@ -80,6 +80,7 @@ public class SshShellWrapper extends AbstractLoggingBean implements Command, Ser
 						shell.echo(Ansi.ansi().cursorLeft(1).a(" ").toString().getBytes(StandardCharsets.UTF_8));
 						shell.echo((byte) 0x08);
 					}
+					//回显
 				} else {
 					buffer.write(read);
 					shell.echo(read);
