@@ -13,6 +13,7 @@ public enum ErrorCodeEnum {
 	ACTION_NOT_FOUND("1006", "当前命令不存在"),
 	ACTION_ERROR("1007", "当前命令存在错误"),
 	NOT_RM_ROOT("1008", "根目录无法删除"),
+	RM_ERROR("1009", "目录不为空，无法删除"),
 
 
 	FILE_HAS_OPEN("2001", "文件被占用，请稍后再试"),

@@ -53,9 +53,6 @@ public class EchoAction extends AbstractAction {
 			Fat16Fd fat16Fd = null;
 			try {
 				fat16Fd = fileSystemService.open(wholeFileName, O_EXLOCK);
-				if (fat16Fd.isEmpty()) {
-					fileSystemService.mkdir(wholeFileName, false);
-				}
 				out.write(extraData.getBytes(StandardCharsets.UTF_8));
 			} finally {
 				fileSystemService.close(fat16Fd);
