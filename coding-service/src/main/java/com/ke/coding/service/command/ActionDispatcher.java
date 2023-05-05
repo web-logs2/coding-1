@@ -98,6 +98,7 @@ public class ActionDispatcher {
 		}
 		action.run();
 		out.flush();
+		err.flush();
 	}
 
 	private void buildRedirectAction(AbstractAction action, String input) {
