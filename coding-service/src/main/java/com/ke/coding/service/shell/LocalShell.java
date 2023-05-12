@@ -3,6 +3,7 @@ package com.ke.coding.service.shell;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -18,7 +19,7 @@ public class LocalShell extends AbstractShell {
 	@Override
 	public void start() throws IOException {
 		setCurrentUser("xyl-local");
-		System.out.print("xyl-local@xyl-shell:/$");
+		out.write("xyl-local@xyl-shell:/$".getBytes(StandardCharsets.UTF_8));
 		for (; ; ) {
 			if (in.available() > 0){
 				super.start();

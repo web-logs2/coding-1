@@ -1,8 +1,11 @@
 package com.ke.coding.service.ssh.server;
 
 import java.io.IOException;
+import java.io.InputStream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
+import org.jline.builtins.ssh.ShellFactoryImpl;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -22,6 +25,9 @@ public class SshServer {
 		sshd.setPort(2222);
 		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
 		sshd.setPasswordAuthenticator((username, password, session) -> username.equals(password));
+//		sshd.setShellFactory(new ShellFactoryImpl(shellParams -> {
+//			System.out.println(shellParams.getTerminal().echo());
+//		}));
 		sshd.setShellFactory(channel -> new SshShellWrapper());
 		sshd.setCommandFactory((channel, command) -> null);
 		sshd.start();

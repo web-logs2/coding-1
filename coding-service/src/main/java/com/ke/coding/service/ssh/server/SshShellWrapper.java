@@ -18,7 +18,11 @@ import org.apache.sshd.server.command.Command;
 import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.session.ServerSessionAware;
 import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.Ansi.Erase;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReader.Option;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 /**
  * @author: xueyunlong001@ke.com
@@ -56,6 +60,16 @@ public class SshShellWrapper extends AbstractLoggingBean implements Command, Ser
 	}
 
 	private void pumpStreams(SshShell shell, ChannelSession channel) throws IOException {
+//		Terminal terminal = TerminalBuilder.builder().system(false).streams(in, out).build();
+//		LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+//		String username = channel.getSession().getUsername();
+//		for (; ; ) {
+//
+//			String s = reader.readLine(username + "@xyl-shell:/$");
+//			shell.setIn(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)));
+//			shell.start();
+//		}
+
 		for (; ; ) {
 			if (in.available() > 0) {
 				byte read = (byte) in.read();
